@@ -1,0 +1,11 @@
+.card{
+  padding: 25px;
+  margin-bottom: 30px;
+  background-color: #fff;
+  border: 0 solid #e9ecef;
+  border-radius: .25rem;
+  box-shadow: 0 3px 9px 0 rgba(169,184,200,.15);
+}
+.card:first-of-type{
+  margin-top: 15px;
+}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import './AddOrder.css';
 import Input from '../UI/Input/Input';
+import Card from '../UI/Card/Card';
 
 const AddOrder = () => {
 
@@ -47,6 +48,7 @@ const AddOrder = () => {
 		<React.Fragment>
 
 			<h1 className="page__title">Dodaj zlecenie</h1>
+			<Card>
 				<React.Fragment>
 					<form onSubmit={(e) => addOrder(e)}>
 						<Input type="text" name="orderNumber" defaultValue={orderNumber} descName="Zlecenie nr:" onChange={(e) => setOrderNumber(e.target.value)} />
@@ -58,13 +60,13 @@ const AddOrder = () => {
 							<option value="company">Firma</option>
 						</select>
 
-	
-								<React.Fragment>
-									<Input type="text" placeholder="Wprowadź imię" descName="Imię:" name="name" onChange={(e) => setName(e.target.value)} />
-									<Input type="text" placeholder="Wprowadź nazwisko" descName="Nazwisko:" name="surName" onChange={(e) => setSurName(e.target.value)} />
-								</React.Fragment> 
-								<Input type="text" placeholder="Wprowadź NIP" descName="NIP:" name="nip" onChange={(e) => setNip(e.target.value)} />
-						
+
+						<React.Fragment>
+							<Input type="text" placeholder="Wprowadź imię" descName="Imię:" name="name" onChange={(e) => setName(e.target.value)} />
+							<Input type="text" placeholder="Wprowadź nazwisko" descName="Nazwisko:" name="surName" onChange={(e) => setSurName(e.target.value)} />
+						</React.Fragment>
+						<Input type="text" placeholder="Wprowadź NIP" descName="NIP:" name="nip" onChange={(e) => setNip(e.target.value)} />
+
 
 
 						<Input type="tel" placeholder="Wprowadź numer telefonu" descName="Telefon:" name="telNumber" onChange={(e) => setTelNumber(e.target.value)} />
@@ -77,6 +79,7 @@ const AddOrder = () => {
 						<Input type="submit" value="Dodaj zlecenie" />
 					</form>
 				</React.Fragment>
+			</Card>
 		</React.Fragment>
 
 	)
