@@ -13,7 +13,7 @@ const App = (props) => {
 	return (
 		<Switch>
 			<Route exact path="/" component={Login} />
-			<Route exact path="/dashboard" component={Dashboard} />
+			<Route path="/dashboard" component={Dashboard} />
 
 			<Route component={NotFound} />
 		</Switch>
