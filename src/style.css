@@ -78,7 +78,7 @@ input:focus{
   border-radius: 2px;
   transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
 }
-.btn-dark {
+.btn--dark {
   color:#fff;
   background-color:#1c2d41;
   border-color: #1c2d41;

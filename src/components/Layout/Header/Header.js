@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 
+import firebase from 'firebase';
 import NavItem from './NavItem/NavItem';
 
 import './Header.css';
@@ -15,7 +16,7 @@ const Header = ({ ...props }) => {
 	}
 
 	const logOut = () => {
-
+		firebase.auth().signOut();
 	}
 
 

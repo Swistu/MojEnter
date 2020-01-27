@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Input from '../UI/Input/Input'
+import firebase from 'firebase';
 
 import './Login.css';
 
@@ -9,11 +10,25 @@ const Login = (props) => {
 	const [login, setLogin] = useState();
 	const [password, setPassword] = useState();
 
-
+	firebase.auth().onAuthStateChanged( user => {
+		if (user) {
+			props.history.push("/dashboard");
+		}
+	});
 
 	const signIn = (e) => {
 		e.preventDefault();
 
+		firebase.auth().signInWithEmailAndPassword(login, password)
+		.catch( error => {
+			// Handle Errors here.
+			var errorCode = error.code;
+			var errorMessage = error.message;
+			// ...
+			console.error(errorCode);
+			console.error(errorMessage);
+
+		});
 
 	}
 
@@ -21,7 +36,9 @@ const Login = (props) => {
 	const signUp = (e) => {
 		e.preventDefault();
 
-
+		firebase.auth().createUserWithEmailAndPassword(login, password)
+		.then(console.log("Dodano"))
+		.catch(console.log("error"));
 	}
 
 
