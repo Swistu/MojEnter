@@ -1,0 +1,12 @@
+.wrapper{
+  display: grid;
+  grid-template-areas:
+  'header' 
+  'main'
+  'footer'
+}
+
+main{
+  padding: 35px;
+  min-height: calc(100vh - 80px);
+}

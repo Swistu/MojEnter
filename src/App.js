@@ -6,11 +6,14 @@ import NotFound from './components/NotFound/NotFound';
 
 import './style.css';
 
+import Dashboard from './components/Dashboard/Dashboard';
+
 const App = (props) => {
 
 	return (
 		<Switch>
 			<Route exact path="/" component={Login} />
+			<Route exact path="/dashboard" component={Dashboard} />
 
 			<Route component={NotFound} />
 		</Switch>
