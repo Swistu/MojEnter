@@ -5,19 +5,11 @@ import { auth } from 'firebase';
 import Layout from '../Layout/Layout';
 import Home from '../Home/Home';
 import AddOrder from '../AddOrder/AddOrder';
+import AssignOrder from '../AssignOrder/AssignOrder';
 
 const Dashboard = (props) => {
 
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-	const routes = (
-		<Layout>
-			<Switch>
-				<Route exact path="/dashboard/" component={Home} />
-				<Route exact path="/dashboard/add-order" component={AddOrder} />
-			</Switch>
-		</Layout>
-	);
 
 	useEffect(() => {
 		auth().onAuthStateChanged( user => {
@@ -29,8 +21,16 @@ const Dashboard = (props) => {
 		});
 	}, []);
 
-
-
+	const routes = (
+		<Layout>
+			<Switch>
+				<Route exact path="/dashboard/" component={Home} />
+				<Route exact path="/dashboard/add-order" component={AddOrder} />
+				<Route exact path="/dashboard/assign-order" component={AssignOrder} />
+			</Switch>
+		</Layout>
+	);
+	
 	return (isAuthenticated?routes:null);
 }
 

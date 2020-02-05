@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import firebase from 'firebase';
 
 import './AddOrder.css';
 import Input from '../UI/Input/Input';
@@ -16,6 +17,7 @@ const AddOrder = () => {
 		todayMonth = (today.getMonth() + 1);
 
 	const todayDate = today.getFullYear() + "/" + todayMonth + "/";
+	const [addingOrder, setAddingOrder] = useState(false);
 
 	const [name, setName] = useState("");
 	const [surName, setSurName] = useState("");
@@ -37,7 +39,63 @@ const AddOrder = () => {
 
 	const addOrder = (e) => {
 		e.preventDefault();
+		setAddingOrder(true);
 
+		const ordersRef = firebase.database().ref('orders/').push();
+		const unassignedOrdersRef = firebase.database().ref('unassignedOrders/').push();
+		const clientsRef = firebase.database().ref('clients/').push();
+
+		const orderUniqueID = ordersRef.key;
+		const unassignedOrderUniqueID = unassignedOrdersRef.key;
+		const clientUniqueID = clientsRef.key;
+
+		console.log(unassignedOrderUniqueID);
+		
+
+		const client = {
+			"clientType": clientType,
+			"address": address,
+			"telNumber": telNumber,
+			"Company": {
+				"nip": nip,
+			},
+			"Individual": {
+				"name": name,
+				"surName": surName,
+			}
+		}
+		const order = {
+			"orderID": orderNumber,
+			"cost": cost,
+			"endDate": endDate,
+			"order": orderValue,
+			"customerComment": customerComment,
+			"vendorComment": vendorComment,
+			"clientUniqueID": clientUniqueID,
+		}
+		const unassignedOrder = {
+			"orderUniqueID": orderUniqueID,
+			"clientUniqueID": clientUniqueID,
+			"password": "123",
+		}
+
+		ordersRef.set(order)
+			.then()
+			.catch(error => console.error(error));
+
+		clientsRef.set(client)
+			.then()
+			.catch(error => console.error(error));
+
+		unassignedOrdersRef.set(unassignedOrder)
+			.then(res => {
+				setAddingOrder(false);
+				// document.getElementById("key").innerHTML = unassignedOrderUniqueID;
+			})
+			.catch(error => {
+				console.error(error)
+				setAddingOrder(false);
+			});
 	}
 
 
@@ -60,15 +118,16 @@ const AddOrder = () => {
 							<option value="company">Firma</option>
 						</select>
 
+						{
+							clientType === "individual" ? (
+								<React.Fragment>
+									<Input type="text" placeholder="Wprowadź imię" descName="Imię:" name="name" onChange={(e) => setName(e.target.value)} />
+									<Input type="text" placeholder="Wprowadź nazwisko" descName="Nazwisko:" name="surName" onChange={(e) => setSurName(e.target.value)} />
+								</React.Fragment>) :
+								<Input type="text" placeholder="Wprowadź NIP" descName="NIP:" name="nip" onChange={(e) => setNip(e.target.value)} />
+						}
 
-						<React.Fragment>
-							<Input type="text" placeholder="Wprowadź imię" descName="Imię:" name="name" onChange={(e) => setName(e.target.value)} />
-							<Input type="text" placeholder="Wprowadź nazwisko" descName="Nazwisko:" name="surName" onChange={(e) => setSurName(e.target.value)} />
-						</React.Fragment>
-						<Input type="text" placeholder="Wprowadź NIP" descName="NIP:" name="nip" onChange={(e) => setNip(e.target.value)} />
-
-
-
+						{/* <Input type="email" placeholder="Wprowadź E-mail" descName="E-mail:" name="email" onChange={(e) => inputChangeHandler(e)}/> */}
 						<Input type="tel" placeholder="Wprowadź numer telefonu" descName="Telefon:" name="telNumber" onChange={(e) => setTelNumber(e.target.value)} />
 						<Input type="text" placeholder="Wprowadź adres" descName="Adres:" name="address" onChange={(e) => setAddress(e.target.value)} />
 						<Input type="text" placeholder="Wprowadź uwagi jakie ma klient" descName="Uwagi klienta:" name="customerComment" onChange={(e) => setCustomerComment(e.target.value)} />
@@ -78,6 +137,7 @@ const AddOrder = () => {
 						<Input type="date" placeholder="Wprowadź imię" descName="Szacowany termin oddania:" name="endDate" onChange={(e) => setEndDate(e.target.value)} />
 						<Input type="submit" value="Dodaj zlecenie" />
 					</form>
+					{/* <div id="Key"></div> */}
 				</React.Fragment>
 			</Card>
 		</React.Fragment>

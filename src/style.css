@@ -41,7 +41,7 @@ p:last-of-type{
   margin-bottom: 0;
 }
 
-input{
+input, select{
   padding: 6px 12px;
   line-height: 1.5;
   color: #4F5467;
@@ -50,6 +50,7 @@ input{
   font-size: 1.6em;
   margin-bottom: 16px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  width: 100%;
 }
 input:focus{
   color:#4F5467;

@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import NavItem from './NavItem/NavItem';
 
 import './Header.css';
+import AssignOrder from '../../AssignOrder/AssignOrder';
 
 
 
@@ -42,8 +43,9 @@ const Header = ({ ...props }) => {
 					<NavItem type="divider" onClick={toggleMenuHandler} />
 
 					<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
-
+					
 					<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/add-order" icon="plus-circle" onClick={toggleMenuHandler} />
+					<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
 
 					<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
 					<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
