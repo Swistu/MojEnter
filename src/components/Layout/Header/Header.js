@@ -45,7 +45,7 @@ const Header = ({ ...props }) => {
 					<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
 					
 					<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/add-order" icon="plus-circle" onClick={toggleMenuHandler} />
-					<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
+					<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
 
 					<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
 					<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />

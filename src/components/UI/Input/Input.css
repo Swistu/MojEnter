@@ -1,0 +1,24 @@
+.input--invalid{
+  border: 1px solid var(--invalid);
+  margin-bottom: 8px;
+}
+.input--valid{
+  border: 1px solid var(--valid);
+}
+
+input, select{
+  padding: 6px 12px;
+  line-height: 1.5;
+  color: #4F5467;
+  border: 1px solid #E9ECEF;
+  border-radius: 2px;
+  font-size: 1.6em;
+  margin-bottom: 16px;
+  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  width: 100%;
+}
+input:focus{
+  color:#4F5467;
+  background-color:#FFFFFF;
+  border-color:rgba(0,0,0,.25);
+}

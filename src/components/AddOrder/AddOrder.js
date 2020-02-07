@@ -1,44 +1,131 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import firebase from 'firebase';
 
 import './AddOrder.css';
 import Input from '../UI/Input/Input';
 import Card from '../UI/Card/Card';
+import useForm from '../../hooks/useForm/useForm';
 
 const AddOrder = () => {
-
 	const today = new Date();
 
 	let todayMonth;
+	let itemsToCheck;
 
 	if (today.getMonth() < 9)
 		todayMonth = "0" + (today.getMonth() + 1);
 	else
 		todayMonth = (today.getMonth() + 1);
-
 	const todayDate = today.getFullYear() + "/" + todayMonth + "/";
+
+	const renderInputs = {
+		payLoad: [
+			{
+				"type": "text",
+				"descName": "Zlecenie nr:",
+				"name": "orderNumber",
+				"defaultValue": todayDate
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź imię",
+				"descName": "Imię:",
+				"name": "firstName",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź nazwisko",
+				"descName": "Nazwisko:",
+				"name": "surName",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź NIP",
+				"descName": "NIP:",
+				"name": "nip",
+			},
+			{
+				"type": "tel",
+				"placeholder": "Wprowadź numer telefonu",
+				"descName": "Telefon:",
+				"name": "telNumber",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź adres",
+				"descName": "Adres:",
+				"name": "address",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź nazwe urządzenia",
+				"descName": "Nazwa urządzenia:",
+				"name": "deviceName",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź wyposażenie",
+				"descName": "Wyposażenie:",
+				"name": "accessory",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź numer seryjny sprzętu",
+				"descName": "Nr. seryjny sprzętu:",
+				"name": "deviceSerialNumber",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź uwagi jakie ma klient",
+				"descName": "Informacje od klienta:",
+				"name": "customerComment",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź uwagi dot. sprzętu",
+				"descName": "Uwagi przyjmującego:",
+				"name": "vendorComment",
+			},
+			{
+				"type": "text",
+				"placeholder": "Wprowadź co jest do wykonania",
+				"descName": "Zlecenie:",
+				"name": "commission",
+			},
+			{
+				"type": "number",
+				"placeholder": "Wprowadź koszt naprawy",
+				"descName": "Szacowany koszt:",
+				"name": "cost",
+			},
+			{
+				"type": "date",
+				"placeholder": "Wybierz termin realizacji",
+				"descName": "Planowany termin realizacji:",
+				"name": "endDate",
+			},
+			{
+				"type": "submit",
+				"name": "sendForm",
+				"value": "Dodaj zlecenie",
+				"className": "btn btn--light"
+			},
+		]
+	};
+
+
+
+	renderInputs.payLoad.map(res => {
+		itemsToCheck = {
+			...itemsToCheck,
+			[res.name]: ""
+		}
+	});
+
+	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(addOrder, itemsToCheck);
 	const [addingOrder, setAddingOrder] = useState(false);
 
-	const [name, setName] = useState("");
-	const [surName, setSurName] = useState("");
-	const [nip, setNip] = useState("");
-	// const [email, setEmail] = useState("");
-	const [address, setAddress] = useState("");
-	const [telNumber, setTelNumber] = useState("");
-	const [cost, setCost] = useState(0);
-	const [endDate, setEndDate] = useState("");
-	const [orderValue, setOrder] = useState("");
-	const [customerComment, setCustomerComment] = useState("");
-	const [vendorComment, setVendorComment] = useState("");
-
-	const [commissionSend, setCommissionSend] = useState(false);
-	const [clientType, setClientType] = useState("individual");
-	const [orderNumber, setOrderNumber] = useState(todayDate);
-
-
-
-	const addOrder = (e) => {
-		e.preventDefault();
+	function addOrder(e) {
 		setAddingOrder(true);
 
 		const ordersRef = firebase.database().ref('orders/').push();
@@ -49,28 +136,23 @@ const AddOrder = () => {
 		const unassignedOrderUniqueID = unassignedOrdersRef.key;
 		const clientUniqueID = clientsRef.key;
 
-		console.log(unassignedOrderUniqueID);
-		
-
 		const client = {
-			"clientType": clientType,
-			"address": address,
-			"telNumber": telNumber,
-			"Company": {
-				"nip": nip,
-			},
-			"Individual": {
-				"name": name,
-				"surName": surName,
-			}
+			"firstName": values.firstName,
+			"surName": values.surName,
+			"address": values.address,
+			"telNumber": values.telNumber,
+			"nip": values.nip,
 		}
 		const order = {
-			"orderID": orderNumber,
-			"cost": cost,
-			"endDate": endDate,
-			"order": orderValue,
-			"customerComment": customerComment,
-			"vendorComment": vendorComment,
+			"orderID": values.orderNumber,
+			"deviceName": values.deviceName,
+			"accessory": values.accessory,
+			"deviceSerialNumber": values.deviceSerialNumber,
+			"cost": values.cost,
+			"endDate": values.endDate,
+			"commission": values.commission,
+			"customerComment": values.customerComment,
+			"vendorComment": values.vendorComment,
 			"clientUniqueID": clientUniqueID,
 		}
 		const unassignedOrder = {
@@ -90,7 +172,7 @@ const AddOrder = () => {
 		unassignedOrdersRef.set(unassignedOrder)
 			.then(res => {
 				setAddingOrder(false);
-				// document.getElementById("key").innerHTML = unassignedOrderUniqueID;
+				alert("numer zlecenia dla klienta " + unassignedOrderUniqueID);
 			})
 			.catch(error => {
 				console.error(error)
@@ -98,51 +180,45 @@ const AddOrder = () => {
 			});
 	}
 
-
-
-
+	console.log(errors);
 
 	return (
 		<React.Fragment>
-
 			<h1 className="page__title">Dodaj zlecenie</h1>
 			<Card>
-				<React.Fragment>
-					<form onSubmit={(e) => addOrder(e)}>
-						<Input type="text" name="orderNumber" defaultValue={orderNumber} descName="Zlecenie nr:" onChange={(e) => setOrderNumber(e.target.value)} />
-						<label htmlFor="type-client">
-							<span className="label__text">Wybierz rodzaj klienta:</span>
-						</label>
-						<select id="type-client" className="form-control" onChange={(e) => setClientType(e.target.value)}>
-							<option value="individual" defaultValue>Klient indywidalny</option>
-							<option value="company">Firma</option>
-						</select>
+				<form onSubmit={handleSubmit}>
+					{renderInputs.payLoad.map((res) => {
+						if (res.type !== "submit")
 
-						{
-							clientType === "individual" ? (
-								<React.Fragment>
-									<Input type="text" placeholder="Wprowadź imię" descName="Imię:" name="name" onChange={(e) => setName(e.target.value)} />
-									<Input type="text" placeholder="Wprowadź nazwisko" descName="Nazwisko:" name="surName" onChange={(e) => setSurName(e.target.value)} />
-								</React.Fragment>) :
-								<Input type="text" placeholder="Wprowadź NIP" descName="NIP:" name="nip" onChange={(e) => setNip(e.target.value)} />
-						}
-
-						{/* <Input type="email" placeholder="Wprowadź E-mail" descName="E-mail:" name="email" onChange={(e) => inputChangeHandler(e)}/> */}
-						<Input type="tel" placeholder="Wprowadź numer telefonu" descName="Telefon:" name="telNumber" onChange={(e) => setTelNumber(e.target.value)} />
-						<Input type="text" placeholder="Wprowadź adres" descName="Adres:" name="address" onChange={(e) => setAddress(e.target.value)} />
-						<Input type="text" placeholder="Wprowadź uwagi jakie ma klient" descName="Uwagi klienta:" name="customerComment" onChange={(e) => setCustomerComment(e.target.value)} />
-						<Input type="text" placeholder="Wprowadź uwagi dot. sprzętu" descName="Uwagi przyjmującego:" name="vendorComment" onChange={(e) => setVendorComment(e.target.value)} />
-						<Input type="text" placeholder="Wprowadź co jest do wykonania" descName="Zlecenie:" name="commission" onChange={(e) => setOrder(e.target.value)} />
-						<Input type="number" placeholder="Wprowadź koszt naprawy" descName="Szacowany koszt:" name="cost" onChange={(e) => setCost(e.target.value)} />
-						<Input type="date" placeholder="Wprowadź imię" descName="Szacowany termin oddania:" name="endDate" onChange={(e) => setEndDate(e.target.value)} />
-						<Input type="submit" value="Dodaj zlecenie" />
-					</form>
-					{/* <div id="Key"></div> */}
-				</React.Fragment>
+							return <React.Fragment key={res.name}>
+								<Input
+									{...res}
+									onChange={handleChange}
+									value={values.name}
+									className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
+								/>
+								{errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
+							</React.Fragment>
+						else
+							return <Input
+								{...res}
+								key={res.name}
+							/>
+					})}
+				</form>
 			</Card>
 		</React.Fragment>
-
 	)
 }
 
 export default AddOrder;
+
+{
+	/* <label htmlFor="type-client">
+		<span className="label__text">Wybierz rodzaj klienta:</span>
+	</label>
+	<select id="type-client" className="form-control" onChange={e => setClientType(e.target.value)}>
+		<option value="individual" defaultValue>Klient indywidalny</option>
+		<option value="company">Firma</option>
+	</select> */
+}

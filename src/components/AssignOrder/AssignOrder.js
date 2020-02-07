@@ -4,15 +4,42 @@ import firebase from 'firebase';
 import Card from '../UI/Card/Card';
 import Input from '../UI/Input/Input';
 import Spinner from '../UI/Spinner/Spinner';
+import useForm from '../../hooks/useForm/useForm';
 
 const AssignOrder = () => {
-
+  let itemsToCheck;
   const [isValidatingAssign, setIsValidatingAssign] = useState(false);
   const [unassignedorderUniqueID, setUnassignedOrderUniqueID] = useState("");
 
+  const renderInputs = {
+    payLoad: [
+      {
+        "type": "text",
+        "descName": "Numer zlecenia:",
+        "placeholder": "Wprowadź numer zlecenia",
+        "name": "unsignedOrderNumber",
+        "defaultValue": ""
+      },
+      {
+        "type": "submit",
+        "name": "sendForm",
+        "value": "Przypisz zlecenie",
+        "className": "btn btn--light"
+      },
+    ]
+  };
 
-  const assignOrderHandler = (e) => {
-    e.preventDefault();
+  renderInputs.payLoad.map(res => {
+    itemsToCheck = {
+      ...itemsToCheck,
+      [res.name]: ""
+    }
+  });
+
+  const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(assignOrder, itemsToCheck);
+
+
+  function assignOrder() {
     setIsValidatingAssign(true);
 
     var user = firebase.auth().currentUser;
@@ -29,7 +56,8 @@ const AssignOrder = () => {
         .then(snapshot => {
           // Vaild orderUID
           if (snapshot.exists && snapshot.val() !== null) {
-            const data = snapshot.val();
+            const snapShotValue = snapshot.val();
+            const data = snapShotValue[Object.keys(snapShotValue)];
 
             //Change userType to user
             promises.push(
@@ -41,8 +69,13 @@ const AssignOrder = () => {
                   console.error(error)
                 })
                 .then(console.log("Zmieniono annonymous => user")));
+
+
+
+
             // Assign new order to account
             promises.push(
+
               userOrders.push({
                 "orderUniqueID": data.orderUniqueID
               })
@@ -51,6 +84,7 @@ const AssignOrder = () => {
                 })
                 .catch(error => {
                   console.error(error)
+                  console.log(data);
                 })
             );
 
@@ -72,16 +106,33 @@ const AssignOrder = () => {
   } // assignOrderHandler()
 
   return (
-    <Card>
-      <form onSubmit={e => assignOrderHandler(e)}>
-        {isValidatingAssign ? <Spinner /> :
-          <React.Fragment>
-            <Input descName="Identyfikator zlecenia" type="text" placeholder="Wprowadź identyfikator" name="orderUID" onChange={(e) => setUnassignedOrderUniqueID(e.target.value)} />
-            <Input type="submit" value="Przypisz zlecenie" />
-          </React.Fragment>
-        }
-      </form>
-    </Card>
+    <React.Fragment>
+      <h1 className="page__title">Przypisz zlecenie</h1>
+      <Card>
+        <form onSubmit={handleSubmit}>
+          {
+            isValidatingAssign ? <Spinner /> :
+              renderInputs.payLoad.map((res) => {
+                if (res.type !== "submit")
+                  return <React.Fragment key={res.name}>
+                    <Input
+                      {...res}
+                      onChange={handleChange}
+                      value={values.name}
+                      className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
+                    />
+                    {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
+                  </React.Fragment>
+                else
+                  return <Input
+                    {...res}
+                    key={res.name}
+                  />
+              })
+          }
+        </form>
+      </Card>
+    </React.Fragment>
   )
 }
 

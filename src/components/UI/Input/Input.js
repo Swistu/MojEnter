@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './Input.css';
+
 const Input = ({type, name, placeholder, descName, ...props}) => {
 
     return(
