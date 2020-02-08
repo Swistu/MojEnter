@@ -12,7 +12,7 @@ input, select{
   color: #4F5467;
   border: 1px solid #E9ECEF;
   border-radius: 2px;
-  font-size: 1.6em;
+  font-size: 1.6rem;
   margin-bottom: 16px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
   width: 100%;

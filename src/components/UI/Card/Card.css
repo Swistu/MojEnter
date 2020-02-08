@@ -9,3 +9,18 @@
 .card:first-of-type{
   margin-top: 15px;
 }
+
+.card__title{
+  color: #212529;
+  font-weight: 500;
+  margin-bottom: 10px;
+  font-size: 2rem;
+}
+
+.info__box{
+  margin: 5px 0 25px;
+}
+.info__title{
+  margin-bottom: 5px;
+  font-weight: 700;
+}

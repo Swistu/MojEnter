@@ -9,6 +9,7 @@ const Home = () => {
     <React.Fragment>
       <h1 className="page__title">Witaj w panelu!</h1>
       <Card>
+        <p>awefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawefawefawefaewawefawefawefawef</p>
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus nec efficitur nibh. Nullam dapibus sagittis sem, condimentum porta turpis volutpat quis. Suspendisse sed neque vel tellus sodales fermentum dapibus et metus. In vitae diam quis leo accumsan laoreet sit amet at nisi. Vivamus in lorem turpis. Suspendisse cursus nulla et neque efficitur, at pharetra enim faucibus. Nulla tincidunt dui sit amet urna sodales vehicula. In dapibus accumsan nisl quis suscipit.
         </p>

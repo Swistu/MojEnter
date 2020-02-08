@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import firebase from 'firebase';
 
 import './AddOrder.css';
-import Input from '../UI/Input/Input';
-import Card from '../UI/Card/Card';
-import useForm from '../../hooks/useForm/useForm';
+import Input from '../../UI/Input/Input';
+import Card from '../../UI/Card/Card';
+import useForm from '../../../hooks/useForm/useForm';
 
 const AddOrder = () => {
 	const today = new Date();
@@ -24,25 +24,13 @@ const AddOrder = () => {
 				"type": "text",
 				"descName": "Zlecenie nr:",
 				"name": "orderNumber",
-				"defaultValue": todayDate
+				"value": todayDate
 			},
 			{
 				"type": "text",
-				"placeholder": "Wprowadź imię",
-				"descName": "Imię:",
-				"name": "firstName",
-			},
-			{
-				"type": "text",
-				"placeholder": "Wprowadź nazwisko",
-				"descName": "Nazwisko:",
-				"name": "surName",
-			},
-			{
-				"type": "text",
-				"placeholder": "Wprowadź NIP",
-				"descName": "NIP:",
-				"name": "nip",
+				"placeholder": "Wprowadź dla kogo jest zlecenie",
+				"descName": "Dla:",
+				"name": "client",
 			},
 			{
 				"type": "tel",
@@ -118,7 +106,7 @@ const AddOrder = () => {
 	renderInputs.payLoad.map(res => {
 		itemsToCheck = {
 			...itemsToCheck,
-			[res.name]: ""
+			[res.name]: res.value ? res.value : ""
 		}
 	});
 
@@ -130,20 +118,14 @@ const AddOrder = () => {
 
 		const ordersRef = firebase.database().ref('orders/').push();
 		const unassignedOrdersRef = firebase.database().ref('unassignedOrders/').push();
-		const clientsRef = firebase.database().ref('clients/').push();
 
 		const orderUniqueID = ordersRef.key;
 		const unassignedOrderUniqueID = unassignedOrdersRef.key;
-		const clientUniqueID = clientsRef.key;
 
-		const client = {
-			"firstName": values.firstName,
-			"surName": values.surName,
+		const order = {
+			"client": values.client,
 			"address": values.address,
 			"telNumber": values.telNumber,
-			"nip": values.nip,
-		}
-		const order = {
 			"orderID": values.orderNumber,
 			"deviceName": values.deviceName,
 			"accessory": values.accessory,
@@ -153,11 +135,9 @@ const AddOrder = () => {
 			"commission": values.commission,
 			"customerComment": values.customerComment,
 			"vendorComment": values.vendorComment,
-			"clientUniqueID": clientUniqueID,
 		}
 		const unassignedOrder = {
 			"orderUniqueID": orderUniqueID,
-			"clientUniqueID": clientUniqueID,
 			"password": "123",
 		}
 
@@ -165,14 +145,11 @@ const AddOrder = () => {
 			.then()
 			.catch(error => console.error(error));
 
-		clientsRef.set(client)
-			.then()
-			.catch(error => console.error(error));
-
 		unassignedOrdersRef.set(unassignedOrder)
 			.then(res => {
 				setAddingOrder(false);
-				alert("numer zlecenia dla klienta " + unassignedOrderUniqueID);
+
+				document.getElementById("test").innerHTML = "Numer zlecenie dla klienta: " + unassignedOrderUniqueID;
 			})
 			.catch(error => {
 				console.error(error)
@@ -180,31 +157,30 @@ const AddOrder = () => {
 			});
 	}
 
-	console.log(errors);
-
 	return (
 		<React.Fragment>
-			<h1 className="page__title">Dodaj zlecenie</h1>
+
 			<Card>
+				<h1 className="card__title">Dodaj zlecenie</h1>
 				<form onSubmit={handleSubmit}>
 					{renderInputs.payLoad.map((res) => {
 						if (res.type !== "submit")
-
 							return <React.Fragment key={res.name}>
 								<Input
 									{...res}
 									onChange={handleChange}
-									value={values.name}
+									value={values[res.name]}
 									className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
 								/>
 								{errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
 							</React.Fragment>
 						else
-							return <Input
-								{...res}
-								key={res.name}
-							/>
+							return <React.Fragment key={res.name}>
+								<Input {...res} />
+								{Object.entries(errors).length === 0 && errors.constructor === Object ? null : <p className={"feedback feedback--invalid"}>{"Proszę poprawić błędy w formularzu"}</p>}
+							</React.Fragment>
 					})}
+					<div id="test"></div>
 				</form>
 			</Card>
 		</React.Fragment>

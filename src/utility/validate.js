@@ -1,6 +1,7 @@
+import firebase from 'firebase';
+
 const validate = (values) => {
   let errors = {};
-
   const itemsToCheck = Object.keys(values);
 
   itemsToCheck.map((fieldName) => checkItem(fieldName));
@@ -42,14 +43,22 @@ const validate = (values) => {
           errors.password = "Hasło musi posiadać długość conajmniej 8 znaków";
         }
         break;
+      case "unsignedOrderNumber":
+
+        if (!values.unsignedOrderNumber) {
+          errors.unsignedOrderNumber = "Proszę podać numer zlecenia";
+        } 
+        break;
+
+
       default:
         if (!values[fieldName] && fieldName !== "sendForm") {
           errors[fieldName] = "Pole wymagane";
         }
         break;
     }
+    
   }
-
   return errors;
 }
 

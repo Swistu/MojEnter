@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import firebase from 'firebase';
 
-import Card from '../UI/Card/Card';
-import Input from '../UI/Input/Input';
-import Spinner from '../UI/Spinner/Spinner';
-import useForm from '../../hooks/useForm/useForm';
+import Card from '../../UI/Card/Card';
+import Input from '../../UI/Input/Input';
+import Spinner from '../../UI/Spinner/Spinner';
+import useForm from '../../../hooks/useForm/useForm';
 
 const AssignOrder = () => {
   let itemsToCheck;
   const [isValidatingAssign, setIsValidatingAssign] = useState(false);
-  const [unassignedorderUniqueID, setUnassignedOrderUniqueID] = useState("");
 
   const renderInputs = {
     payLoad: [
@@ -17,8 +16,7 @@ const AssignOrder = () => {
         "type": "text",
         "descName": "Numer zlecenia:",
         "placeholder": "Wprowadź numer zlecenia",
-        "name": "unsignedOrderNumber",
-        "defaultValue": ""
+        "name": "unassignedorderUniqueID",
       },
       {
         "type": "submit",
@@ -32,7 +30,7 @@ const AssignOrder = () => {
   renderInputs.payLoad.map(res => {
     itemsToCheck = {
       ...itemsToCheck,
-      [res.name]: ""
+      [res.name]: res.value ? res.value : ""
     }
   });
 
@@ -48,22 +46,21 @@ const AssignOrder = () => {
     if (user) {
       let promises = [];
 
-      const unassignedOrdersRef = firebase.database().ref('unassignedOrders/' + unassignedorderUniqueID);
+      const unassignedOrdersRef = firebase.database().ref('unassignedOrders/' + values.unassignedorderUniqueID);
       const userRef = firebase.database().ref('users/' + user.uid);
       const userOrders = firebase.database().ref('users/' + user.uid + '/orders');
 
       unassignedOrdersRef.once("value")
         .then(snapshot => {
           // Vaild orderUID
-          if (snapshot.exists && snapshot.val() !== null) {
-            const snapShotValue = snapshot.val();
-            const data = snapShotValue[Object.keys(snapShotValue)];
+          if (snapshot.exists() && snapshot.val() !== null) {
+            const data = snapshot.val();
 
+            console.log(data);
             //Change userType to user
             promises.push(
               userRef.update({
                 "accountType": "User",
-                "client": data.clientUniqueID
               })
                 .catch(error => {
                   console.error(error)
@@ -96,7 +93,7 @@ const AssignOrder = () => {
             });
 
           } else {
-            console.error("Record not exist");
+            errors.unassignedorderUniqueID = "Zlecenie o podanym numerze nie istnieje";
             setIsValidatingAssign(false);
           }
         })
@@ -104,6 +101,8 @@ const AssignOrder = () => {
 
     } // checkUser
   } // assignOrderHandler()
+
+
 
   return (
     <React.Fragment>
@@ -118,16 +117,16 @@ const AssignOrder = () => {
                     <Input
                       {...res}
                       onChange={handleChange}
-                      value={values.name}
+                      value={values[res.name]}
                       className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
                     />
                     {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
                   </React.Fragment>
                 else
-                  return <Input
-                    {...res}
-                    key={res.name}
-                  />
+                  return <React.Fragment key={res.name}>
+                    <Input {...res} />
+                    {Object.entries(errors).length === 0 && errors.constructor === Object ? null : <p className={"feedback feedback--invalid"}>{"Proszę poprawić błędy w formularzu"}</p>}
+                  </React.Fragment>
               })
           }
         </form>

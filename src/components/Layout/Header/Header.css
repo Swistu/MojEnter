@@ -52,6 +52,9 @@
 .main__navigation a{
   list-style-type: none;
 }
+.main__navigation ul li:first-child{
+  margin-top: 20px;
+}
 .nav__link{
   font-size: 1.6rem;
   padding: 12px 30px;
