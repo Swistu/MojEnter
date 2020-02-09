@@ -38,6 +38,9 @@ const ShowOrder = (props) => {
 
     let statusText;
     switch (status) {
+      case "new":
+        statusText = "Przyjęte";
+        break;
       case "inProgress":
         statusText = "W trakcie";
         break;
@@ -122,6 +125,7 @@ const ShowOrder = (props) => {
               <p className="info__title">Dane klienta:</p>
               <p>Klient: {currentOrder.client}</p>
               <p>Telefon: {currentOrder.telNumber}</p>
+              <p>Adres: {currentOrder.address}</p>
             </section>
             <section className="info__box">
               <p className="info__title">Sprzęt:</p>
@@ -168,7 +172,7 @@ const ShowOrder = (props) => {
       <Card>
         <h2 className="card__title">Objaśnienia statusów</h2>
         <section className="info__box">
-          <p className="info__title">Nowe:</p>
+          <p className="info__title">Przyjęte:</p>
           <p>Zlecenie zostało przyjęte i czeka na rozpoczęcia realizacji przez serwis.</p>
         </section>
         <section className="info__box">

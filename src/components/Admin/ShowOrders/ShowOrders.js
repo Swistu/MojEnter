@@ -49,7 +49,7 @@ const ShowOrders = (props) => {
       </div>
       <Card>
 
-        {listOfOrders ? listOfOrders.props.children === "Brak danych"? listOfOrders : <div className="table-responsive">
+        {listOfOrders ? <div className="table-responsive">
           <table className="table">
             <thead>
               <tr>
@@ -67,8 +67,6 @@ const ShowOrders = (props) => {
             </tbody>
           </table>
         </div> : <Spinner />}
-
-
       </Card>
     </React.Fragment>
   );
