@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import firebase from 'firebase';
+import { database, auth } from 'firebase';
 
 import Card from '../../UI/Card/Card';
 import Input from '../../UI/Input/Input';
@@ -40,15 +40,15 @@ const AssignOrder = () => {
   function assignOrder() {
     setIsValidatingAssign(true);
 
-    var user = firebase.auth().currentUser;
+    var user = auth().currentUser;
 
     // Logged User
     if (user) {
       let promises = [];
 
-      const unassignedOrdersRef = firebase.database().ref('unassignedOrders/' + values.unassignedorderUniqueID);
-      const userRef = firebase.database().ref('users/' + user.uid);
-      const userOrders = firebase.database().ref('users/' + user.uid + '/orders');
+      const unassignedOrdersRef = database().ref('unassignedOrders/' + values.unassignedorderUniqueID);
+      const userRef = database().ref('users/' + user.uid);
+      const userOrders = database().ref('users/' + user.uid + '/orders');
 
       unassignedOrdersRef.once("value")
         .then(snapshot => {

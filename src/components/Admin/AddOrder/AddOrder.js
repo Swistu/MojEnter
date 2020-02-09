@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import firebase from 'firebase';
+import React, { useState } from 'react';
+import { database } from 'firebase';
 
 import './AddOrder.css';
 import Input from '../../UI/Input/Input';
@@ -111,6 +111,8 @@ const AddOrder = () => {
 			...itemsToCheck,
 			[res.name]: res.value ? res.value : ""
 		}
+
+		return null;
 	});
 
 	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(addOrder, itemsToCheck);
@@ -119,13 +121,13 @@ const AddOrder = () => {
 	function addOrder(e) {
 		setAddingOrder(true);
 
-		const ordersRef = firebase.database().ref('orders/').push();
+		const ordersRef = database().ref('orders/').push();
 		const orderUniqueID = ordersRef.key;
 		
-		const unassignedOrdersRef = firebase.database().ref('unassignedOrders/').push();
+		const unassignedOrdersRef = database().ref('unassignedOrders/').push();
 		const unassignedOrderUniqueID = unassignedOrdersRef.key;
 		
-		const ordersHistoryRef = firebase.database().ref('ordersHistory/' + orderUniqueID).push();
+		const ordersHistoryRef = database().ref('ordersHistory/' + orderUniqueID).push();
 
 		const order = {
 			"client": values.client,

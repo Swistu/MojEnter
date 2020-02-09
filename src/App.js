@@ -3,10 +3,9 @@ import {Switch, Route} from "react-router-dom";
 
 import Login from './components/Login/Login';
 import NotFound from './components/NotFound/NotFound';
+import Dashboard from './components/Dashboard/Dashboard';
 
 import './style.css';
-
-import Dashboard from './components/Dashboard/Dashboard';
 
 const App = (props) => {
 

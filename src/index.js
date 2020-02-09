@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from "react-router-dom";
-import firebase from 'firebase';
+import { initializeApp } from 'firebase';
 
 
 const firebaseConfig = {
@@ -16,7 +16,7 @@ const firebaseConfig = {
   appId: "1:1061019741083:web:3878e25d75b14fac10cf3e"
 };
 
-firebase.initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
 
 
 ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));

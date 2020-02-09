@@ -45,6 +45,7 @@ const Dashboard = (props) => {
 										<Route exact path="/dashboard/show-order" component={ShowOrder} />
 									</React.Fragment>)
 								break;
+							default:
 						}
 					}
 				})

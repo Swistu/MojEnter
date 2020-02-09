@@ -1,5 +1,3 @@
-import firebase from 'firebase';
-
 const validate = (values) => {
   let errors = {};
   const itemsToCheck = Object.keys(values);

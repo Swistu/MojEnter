@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
+import { database } from 'firebase';
+
 import Spinner from '../../UI/Spinner/Spinner';
 import Input from '../../UI/Input/Input';
-import firebase from 'firebase';
+
 const UpdateOrder = ({ orderUID, ...props }) => {
 
   const d = new Date();
@@ -14,7 +16,7 @@ const UpdateOrder = ({ orderUID, ...props }) => {
 
   const updateOrder = () => {
     if (content && orderStatus && date) {
-      const ordersHistoryRef = firebase.database().ref('ordersHistory/' + orderUID).push();
+      const ordersHistoryRef = database().ref('ordersHistory/' + orderUID).push();
       const payLoad = {
         status: orderStatus,
         date: date,
@@ -48,7 +50,6 @@ const UpdateOrder = ({ orderUID, ...props }) => {
       <Editor
         apiKey="5pm48o3ipn3vwvjvx337kxdgnt1bsdaxlgbrw5s9e9cdv89w"
         init={{
-          height: 500,
           menubar: false,
           plugins: [
             'advlist autolink lists link image',
@@ -61,7 +62,7 @@ const UpdateOrder = ({ orderUID, ...props }) => {
             alignleft aligncenter alignright | \
             bullist numlist outdent indent image',
           inline_styles: true,
-          height: "200"
+          height: 200
         }}
         onChange={(e) => setContent(e.target.getContent())} />
 

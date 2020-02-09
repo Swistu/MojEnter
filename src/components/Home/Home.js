@@ -2,9 +2,7 @@ import React from 'react';
 
 import Card from '../UI/Card/Card';
 
-
 const Home = () => {
-
   return (
     <React.Fragment>
       <h1 className="page__title">Najnowsze wiadomości</h1>
@@ -24,12 +22,8 @@ const Home = () => {
           Suspendisse a semper magna. Fusce tempus eros eget quam faucibus, vitae maximus nunc cursus. Aenean pulvinar molestie posuere. Nam sed mi risus. In facilisis, eros vitae sagittis consequat, felis leo finibus velit, in sagittis tellus libero eget est. Aliquam viverra urna neque, vitae lobortis nulla luctus quis. Nulla est tellus, lacinia finibus dictum sit amet, feugiat sit amet enim. Mauris interdum urna id ex facilisis, at rhoncus felis egestas. Aliquam vulputate justo turpis, at rutrum nisi condimentum bibendum. Suspendisse mi sem, ullamcorper sed ultrices ac, laoreet quis magna. Suspendisse congue, velit sit amet euismod consequat, erat dui ultricies velit, ut interdum sem mi commodo dolor. Mauris tincidunt nulla vitae elementum vestibulum.
         </p>
       </Card>
-
-
-
     </React.Fragment>
   )
-
 }
 
 export default Home;

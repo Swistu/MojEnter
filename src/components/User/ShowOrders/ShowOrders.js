@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import firebase from 'firebase';
+import { database } from 'firebase';
 
 import Card from '../../UI/Card/Card';
 import Spinner from '../../UI/Spinner/Spinner';
@@ -8,10 +8,10 @@ const ShowOrders = () => {
 
   const [listOfOrders, setListOfOrders] = useState(null);
 
-  const database = firebase.database();
+
 
   useEffect(() => {
-    database.ref("orders").on("value", (snapshot) => {
+    database().ref("orders").on("value", (snapshot) => {
       if (snapshot && snapshot.val()) {
 
         const data = snapshot.val();

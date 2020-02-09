@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import firebase from 'firebase';
+import { database } from 'firebase';
 
 import Card from '../../UI/Card/Card';
 import Spinner from '../../UI/Spinner/Spinner';
@@ -32,8 +32,6 @@ const ShowOrder = (props) => {
   const [historyList, setHistoryList] = useState();
   const [historyDescription, setHistoryDescription] = useState();
 
-  const database = firebase.database();
-
   const statusTypeHandler = (status) => {
 
     let statusText;
@@ -53,54 +51,55 @@ const ShowOrder = (props) => {
       case "done":
         statusText = "Zrealizowane";
         break;
+      default:
     }
 
     return statusText;
   }
   useEffect(() => {
-      database.ref("orders/" + orderUniqueID).once("value", (snapshot) => {
-        if (snapshot && snapshot.val()) {
-          const data = snapshot.val();
+    database().ref("orders/" + orderUniqueID).once("value", (snapshot) => {
+      if (snapshot && snapshot.val()) {
+        const data = snapshot.val();
 
-          setCurrentOrder(data);
-        } else {
-          console.error(snapshot);
-        }
-      })
+        setCurrentOrder(data);
+      } else {
+        console.error(snapshot);
+      }
+    })
 
-      database.ref("ordersMemo/" + orderUniqueID).on("value", (snapshot) => {
-        if (snapshot && snapshot.val()) {
-          const data = snapshot.val();
+    database().ref("ordersMemo/" + orderUniqueID).on("value", (snapshot) => {
+      if (snapshot && snapshot.val()) {
+        const data = snapshot.val();
 
-          setOrderMemo(data);
-          setLoadingMemo(false);
-        } else {
-          console.error(snapshot);
-          setLoadingMemo(false);
-        }
-      })
+        setOrderMemo(data);
+        setLoadingMemo(false);
+      } else {
+        console.error(snapshot);
+        setLoadingMemo(false);
+      }
+    })
 
-      database.ref("ordersHistory/" + orderUniqueID).on("value", (snapshot) => {
-        if (snapshot && snapshot.val()) {
-          const data = snapshot.val();
+    database().ref("ordersHistory/" + orderUniqueID).on("value", (snapshot) => {
+      if (snapshot && snapshot.val()) {
+        const data = snapshot.val();
 
-          const keyOfHistory = Object.keys(data);
-          const historyLength = keyOfHistory.length;
+        const keyOfHistory = Object.keys(data);
+        const historyLength = keyOfHistory.length;
 
-          setHistoryList(keyOfHistory.map((orderUID, i) => {
-            return <li onClick={() => changeHistoryDetails(orderUID) }id={"s" + orderUID} className={`tabs__item ${i + 1 === historyLength ? "active" : null}`} key={"s" + orderUID}>{data[orderUID].date} | {statusTypeHandler(data[orderUID].status)}</li>
-          }))
-          setHistoryDescription(keyOfHistory.map((orderUID, i) => {
-            return <div onClick={() => changeHistoryDetails(orderUID) }id={"d" + orderUID} className={`tabs__pane ${i + 1 === historyLength ? "active" : null}`} key={"d" + orderUID} dangerouslySetInnerHTML={{ __html: data[orderUID].description }} />
-          }))
-          setOrderHistory(data);
-          setLoadingHistory(false);
-        } else {
-          console.error(snapshot);
-          setLoadingHistory(false);
-        }
-      })
-    }, [orderUniqueID])
+        setHistoryList(keyOfHistory.map((orderUID, i) => {
+          return <li onClick={() => changeHistoryDetails(orderUID)} id={"s" + orderUID} className={`tabs__item ${i + 1 === historyLength ? "active" : null}`} key={"s" + orderUID}>{data[orderUID].date} | {statusTypeHandler(data[orderUID].status)}</li>
+        }))
+        setHistoryDescription(keyOfHistory.map((orderUID, i) => {
+          return <div onClick={() => changeHistoryDetails(orderUID)} id={"d" + orderUID} className={`tabs__pane ${i + 1 === historyLength ? "active" : null}`} key={"d" + orderUID} dangerouslySetInnerHTML={{ __html: data[orderUID].description }} />
+        }))
+        setOrderHistory(data);
+        setLoadingHistory(false);
+      } else {
+        console.error(snapshot);
+        setLoadingHistory(false);
+      }
+    })
+  }, [orderUniqueID])
 
   const modalHandler = (title, content) => {
     setModalTitle(title)
@@ -111,8 +110,8 @@ const ShowOrder = (props) => {
   const changeHistoryDetails = (id) => {
     document.querySelector(".tabs__pane.active").classList.remove("active");
     document.querySelector(".tabs__item.active").classList.remove("active");
-    document.getElementById("s"+id).classList.add("active");
-    document.getElementById("d"+id).classList.add("active");
+    document.getElementById("s" + id).classList.add("active");
+    document.getElementById("d" + id).classList.add("active");
   }
 
   return (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import Input from '../UI/Input/Input'
-import firebase from 'firebase';
+import { auth } from 'firebase';
 
 import './Login.css';
 import Spinner from '../UI/Spinner/Spinner';
@@ -11,9 +11,6 @@ const Login = (props) => {
 	let itemsToCheck;
 
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-	const [login, setLogin] = useState();
-	const [password, setPassword] = useState();
 	const [isLogging, setIsLogging] = useState(false);
 
 	const renderInputs = {
@@ -48,7 +45,7 @@ const Login = (props) => {
 	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(signIn, itemsToCheck);
 
 	useEffect(() => {
-		firebase.auth().onAuthStateChanged(user => {
+		auth().onAuthStateChanged(user => {
 			if (user) {
 				setIsAuthenticated(true);
 				props.history.push("/dashboard");
@@ -60,7 +57,7 @@ const Login = (props) => {
 		setIsLogging(true);
 		console.log(values.email);
 
-		firebase.auth().signInWithEmailAndPassword(values.emailFB, values.passwordFB)
+		auth().signInWithEmailAndPassword(values.emailFB, values.passwordFB)
 			.catch(error => {
 				console.log(error.code);
 				console.log(error.message);
@@ -72,24 +69,24 @@ const Login = (props) => {
 			});
 	}
 
-	const signUp = (e) => {
-		e.preventDefault();
-		setIsLogging(true);
+	// const signUp = (e) => {
+	// 	e.preventDefault();
+	// 	setIsLogging(true);
 
-		firebase.auth().createUserWithEmailAndPassword(login, password)
-			.then((data) => {
-				const userRef = firebase.database().ref('users/' + data.user.uid);
-				const payLoad = {
-					accountType: "Annomyous"
-				}
-				userRef.set(payLoad)
-					.then()
-					.catch(error => console.error(error));
-			})
-			.catch(
-				setIsLogging(false)
-			);
-	}
+	// 	auth().createUserWithEmailAndPassword(login, password)
+	// 		.then((data) => {
+	// 			const userRef = database().ref('users/' + data.user.uid);
+	// 			const payLoad = {
+	// 				accountType: "Annomyous"
+	// 			}
+	// 			userRef.set(payLoad)
+	// 				.then()
+	// 				.catch(error => console.error(error));
+	// 		})
+	// 		.catch(
+	// 			setIsLogging(false)
+	// 		);
+	// }
 
 	return (isAuthenticated ? <Spinner /> : <div className="auth__box">
 		<div className="auth__image" style={{ backgroundImage: "url(https://cdn.pixabay.com/photo/2018/07/01/16/52/hardware-3509891_960_720.jpg)" }}>

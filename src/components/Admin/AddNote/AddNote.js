@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from '../../UI/Spinner/Spinner';
 import Input from '../../UI/Input/Input';
-import firebase from 'firebase';
+import { database } from 'firebase';
 const AddNote = ({ orderUID, ...props }) => {
 
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const AddNote = ({ orderUID, ...props }) => {
   const [content, setContent] = useState("");
 
   useEffect(() => {
-    firebase.database().ref("ordersMemo/" + orderUID).once("value", (snapshot) => {
+    database().ref("ordersMemo/" + orderUID).once("value", (snapshot) => {
       if (snapshot && snapshot.val()) {
         const data = snapshot.val();
 
@@ -28,7 +28,7 @@ const AddNote = ({ orderUID, ...props }) => {
 
   const addMemo = () => {
     if (content) {
-      firebase.database().ref('ordersMemo/' + orderUID).set(content)
+      database().ref('ordersMemo/' + orderUID).set(content)
         .then(console.log("dodano"));
     }
   }
