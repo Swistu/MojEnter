@@ -43,11 +43,22 @@ const validate = (values) => {
           errors.password = "Hasło musi posiadać długość conajmniej 8 znaków";
         }
         break;
+      case "passwordFB":
+        if (!values.passwordFB) {
+          errors.passwordFB = "Proszę podać hasło";
+        }
+        break;
+      case "emailFB":
+        if (!values.emailFB) {
+          errors.emailFB = "Proszę podać adres email";
+        } else if (!/\S+@\S+\.\S+/.test(values.emailFB)) {
+          errors.emailFB = "Zły adres email";
+        }
+        break;
       case "unsignedOrderNumber":
-
         if (!values.unsignedOrderNumber) {
           errors.unsignedOrderNumber = "Proszę podać numer zlecenia";
-        } 
+        }
         break;
 
 
@@ -57,7 +68,7 @@ const validate = (values) => {
         }
         break;
     }
-    
+
   }
   return errors;
 }

@@ -5,13 +5,47 @@ import firebase from 'firebase';
 
 import './Login.css';
 import Spinner from '../UI/Spinner/Spinner';
+import useForm from '../../hooks/useForm/useForm';
 
 const Login = (props) => {
+	let itemsToCheck;
+
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 
 	const [login, setLogin] = useState();
 	const [password, setPassword] = useState();
 	const [isLogging, setIsLogging] = useState(false);
+
+	const renderInputs = {
+		payLoad: [
+			{
+				"type": "text",
+				"descName": "Email:",
+				"placeholder": "Wprowadź email",
+				"name": "emailFB",
+			},
+			{
+				"type": "password",
+				"descName": "Hasło:",
+				"placeholder": "Wprowadź hasło",
+				"name": "passwordFB",
+			},
+			{
+				"type": "submit",
+				"name": "sendForm",
+				"value": "Zaloguj się",
+				"className": "btn btn--dark"
+			},
+		]
+	};
+	renderInputs.payLoad.map(res => {
+		itemsToCheck = {
+			...itemsToCheck,
+			[res.name]: res.value ? res.value : ""
+		}
+	});
+
+	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(signIn, itemsToCheck);
 
 	useEffect(() => {
 		firebase.auth().onAuthStateChanged(user => {
@@ -22,36 +56,18 @@ const Login = (props) => {
 		});
 	}, []);
 
-	const layout = (
-		<div className="auth__box">
-			<div className="auth__image" style={{ backgroundImage: "url(https://cdn.pixabay.com/photo/2018/07/01/16/52/hardware-3509891_960_720.jpg)" }}>
-			</div>
-			<div className="auth__form">
-				<div className="auth__desc">
-					<h2 className="auth__header">Zaloguj się</h2>
-					<p className="text">Wprowadź numer zlecenie albo Email, żeby zalogować się do panelu.</p>
-					<form style={{ marginTop: "26px" }}>
-						{!isLogging ?
-							<React.Fragment>
-								<Input type="text" placeholder="Wprowadź login" descName="Użytkownik:" name="login" onChange={(e) => setLogin(e.target.value)} />
-								<Input type="password" placeholder="Wprowadź hasło" descName="Hasło:" name="password" onChange={(e) => setPassword(e.target.value)} />
-								<button className="btn btn--dark" onClick={e => signIn(e)} style={{ marginRight: 50 }}> Zaloguj sie </button>
-								<button className="btn btn--dark" onClick={e => signUp(e)}> Zarejestruj sie </button>
-							</React.Fragment>
-							: <Spinner />}
-					</form>
-				</div>
-			</div>
-		</div>
-	);
-
-	const signIn = (e) => {
-		e.preventDefault();
+	function signIn() {
 		setIsLogging(true);
+		console.log(values.email);
 
-
-		firebase.auth().signInWithEmailAndPassword(login, password)
+		firebase.auth().signInWithEmailAndPassword(values.emailFB, values.passwordFB)
 			.catch(error => {
+				console.log(error.code);
+				console.log(error.message);
+				errors.emailFB = "";
+				errors.passwordFB = "";
+
+				console.log(errors)
 				setIsLogging(false);
 			});
 	}
@@ -75,7 +91,41 @@ const Login = (props) => {
 			);
 	}
 
-	return (isAuthenticated ? <Spinner /> : layout);
+	return (isAuthenticated ? <Spinner /> : <div className="auth__box">
+		<div className="auth__image" style={{ backgroundImage: "url(https://cdn.pixabay.com/photo/2018/07/01/16/52/hardware-3509891_960_720.jpg)" }}>
+		</div>
+		<div className="auth__form">
+			<div className="auth__desc">
+				<h2 className="auth__header">Zaloguj się</h2>
+				<p className="text">Wprowadź adres Email, żeby zalogować się do panelu.</p>
+				<form onSubmit={handleSubmit}>
+					{
+						isLogging ? <Spinner /> :
+							<React.Fragment>
+								{(errors.emailFB === "" || errors.passwordFB === "") && <p className={"feedback feedback--invalid"} style={{marginTop: "20px"}}>Podany email lub hasło jest błędne</p>}
+								{renderInputs.payLoad.map((res) => {
+									if (res.type !== "submit")
+										return <React.Fragment key={res.name}>
+											<Input
+												{...res}
+												onChange={handleChange}
+												value={values[res.name]}
+												className={isSubmitting ? errors[res.name] || errors[res.name] === "" ? "input--invalid" : "input--valid" : null}
+											/>
+											{errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
+										</React.Fragment>
+									else
+										return <React.Fragment key={res.name}>
+											<Input {...res} />
+										</React.Fragment>
+								})}
+							</React.Fragment>
+					}
+				</form>
+				<button className="btn btn--dark" > Zarejestruj sie </button>
+			</div>
+		</div>
+	</div>);
 }
 
 export default Login;

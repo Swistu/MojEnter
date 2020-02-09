@@ -1,9 +1,9 @@
 .input--invalid{
-  border: 1px solid var(--invalid);
+  border: 1px solid var(--danger);
   margin-bottom: 8px;
 }
 .input--valid{
-  border: 1px solid var(--valid);
+  border: 1px solid var(--success);
 }
 
 input, select{

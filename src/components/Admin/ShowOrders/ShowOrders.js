@@ -3,6 +3,7 @@ import firebase from 'firebase';
 
 import Card from '../../UI/Card/Card';
 import Spinner from '../../UI/Spinner/Spinner';
+import Input from '../../UI/Input/Input';
 
 const ShowOrders = (props) => {
   const { history } = props;
@@ -29,21 +30,26 @@ const ShowOrders = (props) => {
         </tr>))
       } else {
         console.error("Brak danych pod danym endpoint'em");
-        setListOfOrders(<h2>Nie można pobrać danych</h2>)
+        setListOfOrders(<h2>Brak danych</h2>)
       }
     })
   }, [])
 
   const redirectToOrder = (order) => {
-    history.push({pathname: `/dashboard/show-order`, state: {"orderUID": order}});
+    history.push({ pathname: `/dashboard/show-order`, state: { "orderUID": order } });
   }
   return (
     <React.Fragment>
-      <h1 className="page__title">Zlecenia</h1>
+      {/* <h1 className="page__title">Zlecenia</h1> */}
+      <div style={{display: "flex", flexDirection: "column"}}>
+        <Input type="button" className="btn btn--light " value="Wszystkie Zlecenia" />
+        <Input type="button" className="btn btn--warning " value="Zlecenia w trakcie" />
+        <Input type="button" className="btn btn--success " value="Zrealizowane Zlecenia" />
+        <Input type="button" className="btn btn--danger " value="Niezrealizowne zlecenia" />
+      </div>
       <Card>
 
-
-        {listOfOrders ? <div className="table-responsive">
+        {listOfOrders ? listOfOrders.props.children === "Brak danych"? listOfOrders : <div className="table-responsive">
           <table className="table">
             <thead>
               <tr>

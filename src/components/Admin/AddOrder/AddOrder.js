@@ -9,6 +9,9 @@ import useForm from '../../../hooks/useForm/useForm';
 const AddOrder = () => {
 	const today = new Date();
 
+	const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
+	const orderAddDate = today.toLocaleDateString('pl-PL', dateOptions);
+
 	let todayMonth;
 	let itemsToCheck;
 
@@ -117,10 +120,12 @@ const AddOrder = () => {
 		setAddingOrder(true);
 
 		const ordersRef = firebase.database().ref('orders/').push();
-		const unassignedOrdersRef = firebase.database().ref('unassignedOrders/').push();
-
 		const orderUniqueID = ordersRef.key;
+		
+		const unassignedOrdersRef = firebase.database().ref('unassignedOrders/').push();
 		const unassignedOrderUniqueID = unassignedOrdersRef.key;
+		
+		const ordersHistoryRef = firebase.database().ref('ordersHistory/' + orderUniqueID).push();
 
 		const order = {
 			"client": values.client,
@@ -141,6 +146,14 @@ const AddOrder = () => {
 			"password": "123",
 		}
 
+		const orderHistory = {
+			status: "new",
+			date: orderAddDate,
+			description: "Zlecenie zostało przyjęte."
+		}
+
+		ordersHistoryRef.set(orderHistory)
+			.catch(error => console.error(error));
 		ordersRef.set(order)
 			.then()
 			.catch(error => console.error(error));
@@ -189,12 +202,11 @@ const AddOrder = () => {
 
 export default AddOrder;
 
-{
-	/* <label htmlFor="type-client">
-		<span className="label__text">Wybierz rodzaj klienta:</span>
-	</label>
-	<select id="type-client" className="form-control" onChange={e => setClientType(e.target.value)}>
-		<option value="individual" defaultValue>Klient indywidalny</option>
-		<option value="company">Firma</option>
-	</select> */
-}
+
+	//  <label htmlFor="type-client">
+	// 	<span className="label__text">Wybierz rodzaj klienta:</span>
+	// </label>
+	// <select id="type-client" className="form-control" onChange={e => setClientType(e.target.value)}>
+	// 	<option value="individual" defaultValue>Klient indywidalny</option>
+	// 	<option value="company">Firma</option>
+	// </select> 
