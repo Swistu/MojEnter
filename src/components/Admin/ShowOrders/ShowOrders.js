@@ -17,7 +17,7 @@ const ShowOrders = (props) => {
         const data = snapshot.val();
         const listOfOrdersUID = Object.keys(data);
         let i = 1;
-        setListOfOrders(listOfOrdersUID.map(order => <tr key={order} onClick={() => redirectToOrder(order)}>
+        setListOfOrders(listOfOrdersUID.map(order => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
           <td>{i++}</td>
           <td>{data[order].orderID}</td>
           <td>{data[order].client}</td>
@@ -43,7 +43,7 @@ const ShowOrders = (props) => {
         <Input type="button" className="btn btn--light " value="Wszystkie Zlecenia" />
         <Input type="button" className="btn btn--warning " value="Zlecenia w trakcie" />
         <Input type="button" className="btn btn--success " value="Zrealizowane Zlecenia" />
-        <Input type="button" className="btn btn--danger " value="Niezrealizowne zlecenia" />
+        {/* <Input type="button" className="btn btn--danger " value="Niezrealizowne zlecenia" /> */}
       </div>
       <Card>
 

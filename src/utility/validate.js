@@ -42,8 +42,22 @@ const validate = (values) => {
         }
         break;
       case "passwordFB":
+        console.log(values);
         if (!values.passwordFB) {
           errors.passwordFB = "Proszę podać hasło";
+        } else if (values.passwordFB.length < 6) {
+          errors.passwordFB = "Hasło musi zawierać conajmniej 6 znaków";
+        } else if (values.passwordFB2 && values.passwordFB !== values.passwordFB2) {
+          errors.passwordFB = "Hasła nie są identyczne";
+        }
+        break;
+      case "passwordFB2":
+        if (!values.passwordFB2) {
+          errors.passwordFB2 = "Proszę podać hasło";
+        } else if (values.passwordFB2.length < 6) {
+          errors.passwordFB2 = "";
+        } else if (values.passwordFB && values.passwordFB !== values.passwordFB2) {
+          errors.passwordFB2 = "";
         }
         break;
       case "emailFB":

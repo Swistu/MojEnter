@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { signIn } from '../../../actions';
 
 import { auth, database } from 'firebase';
 import NavItem from './NavItem/NavItem';
@@ -6,70 +8,77 @@ import NavItem from './NavItem/NavItem';
 import './Header.css';
 
 const Header = ({ ...props }) => {
+	const dispatch = useDispatch();
+	const user = useSelector(state => state.authenticationReducer.user);
 
 	const [toggleMenu, setToggleMenu] = useState(false);
 	const [routes, setRoutes] = useState();
 
 	useEffect(() => {
-		auth().onAuthStateChanged(user => {
-			if (user) {
-				database().ref("/users/" + user.uid).once("value", (snapshot) => {
-					if (snapshot && snapshot.val()) {
-						const data = snapshot.val();
+		if (user) {
+			database().ref("/users/" + user.uid).on("value", (snapshot) => {
+				if (snapshot && snapshot.val()) {
+					const data = snapshot.val();
 
-						switch (data.accountType) {
-							case "Annomyous":
-								setRoutes(
-									<React.Fragment>
-										<NavItem type="link" name="Kokpit" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
-										<NavItem type="divider" onClick={toggleMenuHandler} />
+					switch (data.accountType) {
+						case "Annomyous":
+							setRoutes(
+								<React.Fragment>
+									<NavItem type="link" name="Kokpit" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
+									<NavItem type="divider" onClick={toggleMenuHandler} />
+ 
+ 
+									<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
 
-										<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
+									<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Konto" to="/dashboard/user" icon="user-cog" onClick={toggleMenuHandler} />
 
-										<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
-									</React.Fragment>
-								)
-								break;
-							case "User":
-								setRoutes(
-									<React.Fragment>
-										<NavItem type="link" name="Kokpit" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
-										<NavItem type="divider" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
+								</React.Fragment>
+							)
+							break;
+						case "User":
+							setRoutes(
+								<React.Fragment>
+									<NavItem type="link" name="Kokpit" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
+									<NavItem type="divider" onClick={toggleMenuHandler} />
 
-										<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
+									<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
 
-										<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Zlecenia" to="/dashboard/show-orders" icon="file-alt" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Zlecenia" to="/dashboard/show-orders" icon="file-alt" onClick={toggleMenuHandler} />
 
-										<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
-									</React.Fragment>
-								)
-								break;
-							case "Admin":
-								setRoutes(
-									<React.Fragment>
-										<NavItem type="link" name="Kokpit" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
-										<NavItem type="divider" onClick={toggleMenuHandler} />
+									<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Konto" to="/dashboard/user" icon="user-cog" onClick={toggleMenuHandler} />
 
-										<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
+								</React.Fragment>
+							)
+							break;
+						case "Admin":
+							setRoutes(
+								<React.Fragment>
+									<NavItem type="link" name="Kokpit" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
+									<NavItem type="divider" onClick={toggleMenuHandler} />
 
-										<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/add-order" icon="plus-circle" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Zlecenia" to="/dashboard/show-orders" icon="file-alt" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Dodaj admina" to="/dashboard/add-admin" icon="user" onClick={toggleMenuHandler} />
+									<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
 
-										<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
-										<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
-									</React.Fragment>
-								)
-								break;
-						}
+									<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/add-order" icon="plus-circle" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Zlecenia" to="/dashboard/show-orders" icon="file-alt" onClick={toggleMenuHandler} />
+									{/* <NavItem type="link" name="Dodaj admina" to="/dashboard/add-admin" icon="user" onClick={toggleMenuHandler} /> */}
+
+									<NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
+									<NavItem type="link" name="Konto" to="/dashboard/user" icon="user-cog" onClick={toggleMenuHandler} />
+
+									<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
+								</React.Fragment>
+							)
+							break;
 					}
-				})
-			}
-		})
+				}
+			})
+		}
 	}, []);
 
 	const toggleMenuHandler = () => {
@@ -77,6 +86,7 @@ const Header = ({ ...props }) => {
 	}
 
 	const logOut = () => {
+		dispatch(signIn(null, false));
 		auth().signOut();
 	}
 	return (

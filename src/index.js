@@ -4,6 +4,19 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from "react-router-dom";
 import { initializeApp } from 'firebase';
+import { createStore, applyMiddleware, compose } from 'redux';
+import thunk from 'redux-thunk';
+import allReducer from './reducers';
+import { Provider } from 'react-redux';
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(
+  allReducer,
+  composeEnhancers(applyMiddleware(thunk)),
+
+);
+
 
 
 const firebaseConfig = {
@@ -19,9 +32,16 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 
 
-ReactDOM.render(<BrowserRouter><App /></BrowserRouter>, document.getElementById('root'));
+ReactDOM.render(
+  <Provider store={store}>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </Provider>
+  , document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
+// 999Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();

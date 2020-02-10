@@ -32,10 +32,6 @@ const UpdateOrder = ({ orderUID, ...props }) => {
 
   return (
     <React.Fragment>
-
-
-
-
       <label htmlFor="orderStatus">
         <h2 className="card__title">Wybierz status:</h2>
       </label>

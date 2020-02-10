@@ -56,44 +56,28 @@ const AssignOrder = () => {
           if (snapshot.exists() && snapshot.val() !== null) {
             const data = snapshot.val();
 
-            console.log(data);
             //Change userType to user
             promises.push(
               userRef.update({
                 "accountType": "User",
               })
-                .catch(error => {
-                  console.error(error)
-                })
-                .then(console.log("Zmieniono annonymous => user")));
-
-
-
-
+            );
             // Assign new order to account
             promises.push(
-
               userOrders.push({
                 "orderUniqueID": data.orderUniqueID
               })
-                .then(res => {
-                  console.log("Dodano zamowienie do usera")
-                })
-                .catch(error => {
-                  console.error(error)
-                  console.log(data);
-                })
             );
-
+            
+            // Delete from unnasigned form when others done
             Promise.all(promises).then((res) => {
-              // Delete from unnasigned form
               unassignedOrdersRef.remove();
               console.log("usunieto stary wpis");
               setIsValidatingAssign(false);
             });
 
           } else {
-            errors.unassignedorderUniqueID = "Zlecenie o podanym numerze nie istnieje";
+            errors.unassignedorderUniqueID = "Zlecenie o podanym numerze nie istnieje albo zostało już przypisane";
             setIsValidatingAssign(false);
           }
         })
@@ -106,7 +90,6 @@ const AssignOrder = () => {
 
   return (
     <React.Fragment>
-      <h1 className="page__title">Przypisz zlecenie</h1>
       <Card>
         <form onSubmit={handleSubmit}>
           {
@@ -125,7 +108,6 @@ const AssignOrder = () => {
                 else
                   return <React.Fragment key={res.name}>
                     <Input {...res} />
-                    {Object.entries(errors).length === 0 && errors.constructor === Object ? null : <p className={"feedback feedback--invalid"}>{"Proszę poprawić błędy w formularzu"}</p>}
                   </React.Fragment>
               })
           }

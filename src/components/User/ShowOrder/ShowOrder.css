@@ -1,0 +1,31 @@
+.info__box p{
+  margin: 0 0 5px 0;
+}
+
+.tabs__nav{
+  list-style-type: none;
+}
+
+.tabs__item{
+  padding: .8rem 1.6rem;
+  width: auto;
+  color: #5f76e8;
+  border-radius: 2px;
+}
+.tabs__item:hover{
+  color: #1f3fdb;
+  cursor: pointer;
+}
+.tabs__item.active{
+  background-color: #5f76e8;
+  color: #ffffff;
+}
+.tabs__content{
+  margin-top: 15px;
+}
+.tabs__pane{
+  display: none;
+}
+.tabs__pane.active{
+  display: block;
+}

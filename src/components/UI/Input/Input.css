@@ -8,7 +8,6 @@
 
 input, select{
   padding: 6px 12px;
-  line-height: 1.5;
   color: #4F5467;
   border: 1px solid #E9ECEF;
   border-radius: 2px;
@@ -16,6 +15,10 @@ input, select{
   margin-bottom: 16px;
   transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
   width: 100%;
+}
+input[type=submit]{
+  font-weight: 500;
+  line-height: 24px;
 }
 input:focus{
   color:#4F5467;
