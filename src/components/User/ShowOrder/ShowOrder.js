@@ -102,7 +102,7 @@ const ShowOrder = (props) => {
 
   return (
     <React.Fragment>
-      <p style={{float: "right", fontWeight: "Bold", marginBottom: "15px"}} onClick={() => history.push({ pathname: `/dashboard/messages`, state: { "orderUID": orderUniqueID } })}>Napisz wiadomość</p>
+      <p style={{float: "right", fontWeight: "Bold", marginBottom: "15px"}} onClick={() => history.push({ pathname: `/dashboard/messages`, state: { "orderUID": orderUniqueID, "orderID": currentOrder.orderID } })}>Napisz wiadomość</p>
       <div style={{clear: "both"}}/>
       <Card>
         {currentOrder ? <React.Fragment>

@@ -14,7 +14,10 @@
   padding: 8px 16px;
   line-height: 18px;
 }
-.contact__box .message__item{
+.contact__box {
+  border-top: 1px solid #edf2f9;
+}
+.contact__box .message__item:nth-child(1n+2){
   border-top: 1px solid #edf2f9;
 }
 .message__item__details{
@@ -46,6 +49,8 @@
 }
 .chat__box {
   padding: 20px 0 0;
+  display: flex;
+  flex-direction: column;
 }
 .chat__box .message__sender{
   margin-bottom: 8px;
@@ -53,7 +58,7 @@
   font-weight: 500;
 }
 .chat__box .message__time{
-  margin-top: 4px;
+  margin-top: 8px;
   font-size: 10px;
   line-height: 15px;
   color: #7c8798;
@@ -78,6 +83,7 @@
   padding: 25px;
   display: flex;
   justify-content: space-between;
+  margin-top: auto;
 }
 .createNewMessage #newMessage{
   color: #4F5467;

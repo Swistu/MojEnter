@@ -174,7 +174,6 @@ const AddOrder = () => {
 
 	return (
 		<React.Fragment>
-
 			<Card>
 				<h1 className="card__title">Dodaj zlecenie</h1>
 				<form onSubmit={handleSubmit}>
@@ -203,12 +202,3 @@ const AddOrder = () => {
 }
 
 export default AddOrder;
-
-
-	//  <label htmlFor="type-client">
-	// 	<span className="label__text">Wybierz rodzaj klienta:</span>
-	// </label>
-	// <select id="type-client" className="form-control" onChange={e => setClientType(e.target.value)}>
-	// 	<option value="individual" defaultValue>Klient indywidalny</option>
-	// 	<option value="company">Firma</option>
-	// </select> 
