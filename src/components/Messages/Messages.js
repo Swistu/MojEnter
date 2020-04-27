@@ -10,7 +10,7 @@ import Spinner from '../UI/Spinner/Spinner';
 import './Messages.css';
 
 const Messages = ({ history, ...props }) => {
-	const { data } = useSelector(state => state.authenticationReducer);
+  const { data } = useSelector(state => state.authenticationReducer);
 
   console.log(data);
   const [newMessage, setNewMessage] = useState("");
@@ -84,9 +84,9 @@ const Messages = ({ history, ...props }) => {
     const MessageUniqueID = MessageRef.key;
 
     const today = new Date();
-    const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    const date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-    const dateTime = date+' '+time;
+    const dateTime = date + ' ' + time;
 
 
 
@@ -104,10 +104,98 @@ const Messages = ({ history, ...props }) => {
 
   return (
     <React.Fragment>
-      <Card>
+      <Card style={{paddingBottom: "0"}}>
         {/* <h5 onClick={() => history.push({ pathname: `/dashboard/`})}>Utwórz nową wiadomość</h5> */}
-        <h2>Wszystkie wiadomosci</h2>
-        <div className="chatPeople">
+        <h2>Wiadomości</h2>
+        <div className="messages__box">
+          <div className="contact__box">
+            <div className="message__item">
+              <div className="message__image">
+                <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="image-cirlce" alt="" />
+              </div>
+              <div className="message__item__details">
+                <div className="message__sender">
+                  Pawel Kowalski 
+                </div>
+                <div className="message__orderdID">
+                  2020/04/56
+                </div>
+                <div className="message__time">
+                  <time>9:10</time>
+                </div>
+              </div>
+            </div>
+            <div className="message__item">
+              <div className="message__image">
+                <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="image-cirlce" alt="" />
+              </div>
+              <div className="message__item__details">
+                <div className="message__sender">
+                  Pawel Kowalski 2
+                </div>
+                <div className="message__orderdID">
+                  2020/04/56
+                </div>
+                <div className="message__time">
+                  <time>13:10</time>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+          <div className="chat__box">
+            <div className="message__item">
+              <div className="message__image">
+                <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="image-cirlce" alt="" />
+              </div>
+              <div className="message__item__details">
+                <div className="message__sender">
+                  Pawel Kowalski
+              </div>
+                <div className="message__subject">
+                  Czesc, tutaj pisze odnosnie tego zlecenia. Kiedy bedzie gotowe?
+              </div>
+                <div className="message__time">
+                  <time>9:10</time>
+                </div>
+              </div>
+            </div>
+
+            <div className="message__item sender-me">
+              <div className="message__image">
+                <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="image-cirlce" alt="" />
+              </div>
+              <div className="message__item__details">
+                <div className="message__sender">
+                  Pawel Kowalski
+              </div>
+                <div className="message__subject">
+                  Czesc, tutaj pisze odnosnie tego zlecenia. Kiedy bedzie gotowe?
+              </div>
+                <div className="message__time">
+                  <time>9:10</time>
+                </div>
+              </div>
+            </div>
+            <div className="createNewMessage">
+              <Input type="text" placeholder="Napisz wiadomość" id="newMessage" />
+              <div id="sendMessage">
+                <i class="fas fa-paper-plane"></i>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+
+
+
+        {/* <div className="messages__box">
           {allOrdersMessages}
           <div class="allMessages">
             {orderUniqueID ? loadingMessages ? <Spinner /> : allMessages : null}
@@ -120,9 +208,9 @@ const Messages = ({ history, ...props }) => {
             </React.Fragment>
             : null}
 
-        </div>
+        </div> */}
       </Card>
-    </React.Fragment>
+    </React.Fragment >
   )
 }
 

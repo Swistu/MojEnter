@@ -2,13 +2,20 @@ import React from 'react';
 
 import './Input.css';
 
-const Input = ({type, name, placeholder, descName, ...props}) => {
+const Input = ({ type, name, placeholder, descName, ...props }) => {
 
-    return(
-        <label>
+    let input;
+
+    if (descName == null)
+        input = <input type={type} name={name} placeholder={placeholder} {...props} />
+    else {
+        input = (<label>
             <span className="label__text">{descName}</span>
             <input type={type} name={name} placeholder={placeholder} {...props} />
-        </label>
+        </label>)
+    }
+    return (
+        input
     )
 }
 

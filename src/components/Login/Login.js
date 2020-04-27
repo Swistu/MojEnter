@@ -29,13 +29,13 @@ const Login = (props) => {
 		payLoad: [
 			{
 				"type": "text",
-				"descName": "Email:",
+				"descName": "Email",
 				"placeholder": "Wprowadź email",
 				"name": "emailFB",
 			},
 			{
 				"type": "password",
-				"descName": "Hasło:",
+				"descName": "Hasło",
 				"placeholder": "Wprowadź hasło",
 				"name": "passwordFB",
 			},
