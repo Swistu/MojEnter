@@ -1,16 +1,16 @@
-export const SIGN_IN = "SIGN_IN";
+import * as actionTypes from '../actionTypes';
 
 const initialState = {
-  isAuth: false,
   user: null,
 }
 
 const authenticationReducer = (state = initialState, action) => {
   switch (action.type) {
-    case SIGN_IN:
+    case actionTypes.AUTHENTICATION:
       state = {
         ...state,
-        user: action.payLoad.user
+        firebaseUser: action.payLoad.firebaseUser,
+        data: action.payLoad.data
       }
       return state;
       break;

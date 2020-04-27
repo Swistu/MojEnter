@@ -4,11 +4,11 @@ import { auth } from 'firebase';
 import Card from '../UI/Card/Card';
 
 const Home = () => {
-  const user = useSelector(state => state.authenticationReducer.user);
+  const {firebaseUser, data} = useSelector(state => state.authenticationReducer);
 
   return (
     <React.Fragment>
-      <p>Witaj{user.displayName !== null ? ", " + user.displayName : null} w panelu.</p>
+      <p>Witaj{data.name? ", " + data.name : null} w panelu.</p>
       <p></p>
       <h4 className="page__title">Najnowsze wiadomości</h4>
       <Card>

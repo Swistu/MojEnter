@@ -53,7 +53,10 @@ const Registration = ({ showRegisterHandler, ...props }) => {
       .then((data) => {
         const userRef = database().ref('users/' + data.user.uid);
         const payLoad = {
-          accountType: "Annomyous"
+          accountType: "Annomyous",
+          name: "",
+          phoneNumber: "",
+          address: "",
         }
         userRef.set(payLoad)
           .catch(error => console.error(error));

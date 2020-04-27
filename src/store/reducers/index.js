@@ -1,9 +1,9 @@
-import counterReducer from './counter';
+import modalReducer from './modalReducer';
 import authenticationReducer from './authenticationReducer';
 import { combineReducers } from 'redux';
 
 const allReducers = combineReducers({
-  counterReducer, authenticationReducer
+  modalReducer, authenticationReducer
 });
 
 export default allReducers;

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { database } from 'firebase';
+import { useDispatch } from 'react-redux';
 
+import { modal } from '../../../store/actions';
+import { SHOW } from '../../../store/actionTypes'
 import Card from '../../UI/Card/Card';
 import Spinner from '../../UI/Spinner/Spinner';
 import './ShowOrder.css';
@@ -9,8 +12,7 @@ import Modal from '../../UI/Modal/Modal';
 import AddNote from '../AddNote/AddNote';
 import UpdateOrder from '../UpdateOrder/UpdateOrder';
 
-const ShowOrder = (props) => {
-  const { history } = props;
+const ShowOrder = ({ history, ...props }) => {
   let orderUniqueID;
 
   if (!history.location.state)
@@ -18,22 +20,16 @@ const ShowOrder = (props) => {
   else
     orderUniqueID = history.location.state.orderUID;
 
-  const [showModal, setShowModal] = useState(false);
+  const dispatch = useDispatch();
+
   const [currentOrder, setCurrentOrder] = useState(null);
-
-  const [modalTitle, setModalTitle] = useState(false);
-  const [modalContent, setModalContent] = useState(false);
-
   const [orderMemo, setOrderMemo] = useState(null);
-  const [orderHistory, setOrderHistory] = useState(null);
   const [lodaingMemo, setLoadingMemo] = useState(true);
   const [loadingHistory, setLoadingHistory] = useState(true);
-
   const [historyList, setHistoryList] = useState();
   const [historyDescription, setHistoryDescription] = useState();
 
   const statusTypeHandler = (status) => {
-
     let statusText;
     switch (status) {
       case "new":
@@ -53,7 +49,6 @@ const ShowOrder = (props) => {
         break;
       default:
     }
-
     return statusText;
   }
   useEffect(() => {
@@ -66,7 +61,6 @@ const ShowOrder = (props) => {
         console.error(snapshot);
       }
     })
-
     database().ref("ordersMemo/" + orderUniqueID).on("value", (snapshot) => {
       if (snapshot && snapshot.val()) {
         const data = snapshot.val();
@@ -78,7 +72,6 @@ const ShowOrder = (props) => {
         setLoadingMemo(false);
       }
     })
-
     database().ref("ordersHistory/" + orderUniqueID).on("value", (snapshot) => {
       if (snapshot && snapshot.val()) {
         const data = snapshot.val();
@@ -92,7 +85,6 @@ const ShowOrder = (props) => {
         setHistoryDescription(keyOfHistory.map((orderUID, i) => {
           return <div onClick={() => changeHistoryDetails(orderUID)} id={"d" + orderUID} className={`tabs__pane ${i + 1 === historyLength ? "active" : null}`} key={"d" + orderUID} dangerouslySetInnerHTML={{ __html: data[orderUID].description }} />
         }))
-        setOrderHistory(data);
         setLoadingHistory(false);
       } else {
         console.error(snapshot);
@@ -101,10 +93,8 @@ const ShowOrder = (props) => {
     })
   }, [orderUniqueID])
 
-  const modalHandler = (title, content) => {
-    setModalTitle(title)
-    setModalContent(content)
-    setShowModal(prev => !prev);
+  const modalHandler = (title, component) => {
+    dispatch(modal(SHOW, title, component));
   }
 
   const changeHistoryDetails = (id) => {
@@ -116,6 +106,8 @@ const ShowOrder = (props) => {
 
   return (
     <React.Fragment>
+      <p style={{float: "right", fontWeight: "Bold", marginBottom: "15px"}} onClick={() => history.push({ pathname: `/dashboard/messages`, state: { "orderUID": orderUniqueID, "orderID": currentOrder.orderID } })}>Napisz wiadomość</p>
+      <div style={{clear: "both"}}/>
       <Card>
         {currentOrder ? <React.Fragment>
           <div className="order__summary">
@@ -145,6 +137,7 @@ const ShowOrder = (props) => {
             </section>
             <Input type="submit" className="btn btn--light" value="Aktualizuj zlecenie" onClick={() => modalHandler("Aktualizuj zlecenie", <UpdateOrder orderUID={orderUniqueID} />)} />
             <Input type="submit" className="btn btn--warning" value="Dodaj notatke" onClick={() => modalHandler("Dodaj notke", <AddNote orderUID={orderUniqueID} />)} />
+            {/* <Modal closeModal={modalHandler} showModal={showModal} title={modalTitle} content={modalContent} /> */}
             {/* <Input type="submit" className="btn btn--danger" value="Zakończ zlecenie" /> */}
           </div>
         </React.Fragment> : <Spinner />}
@@ -204,7 +197,7 @@ const ShowOrder = (props) => {
           <p>Email: handel@enter.pl</p>
         </section>
       </Card>
-      <Modal closeModal={modalHandler} showModal={showModal} title={modalTitle} content={modalContent} />
+
     </React.Fragment>
   );
 }

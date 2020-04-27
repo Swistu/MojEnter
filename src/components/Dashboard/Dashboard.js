@@ -15,18 +15,16 @@ import { default as ShowUserOrders } from '../User/ShowOrders/ShowOrders';
 import { default as ShowUserOrder } from '../User/ShowOrder/ShowOrder';
 
 import UserConfig from '../UserConfig/UserConfig'
+import Messages from '../Messages/Messages'
 import NotFound from '../NotFound/NotFound';
 
 const Dashboard = (props) => {
-	const user = useSelector(state => state.authenticationReducer.user);
-
-	
-
+	const { firebaseUser } = useSelector(state => state.authenticationReducer);
 	const [routes, setRoutes] = useState();
 
 	useEffect(() => {
-		if (user) {
-			database().ref("/users/" + user.uid).on("value", (snapshot) => {
+		if (firebaseUser) {
+			database().ref("/users/" + firebaseUser.uid).on("value", (snapshot) => {
 				if (snapshot && snapshot.val()) {
 					const data = snapshot.val();
 
@@ -60,20 +58,19 @@ const Dashboard = (props) => {
 		} else {
 			props.history.push("/");
 		}
-	}, [user]);
-	
-	console.log(user);
+	}, [firebaseUser]);
 
-return (user ?
-	<Layout>
-		<Switch>
-			<Route exact path="/dashboard/" component={Home} />
-			<Route exact path="/dashboard/user" component={UserConfig} />
-			{routes}
-			<Route component={NotFound} />
-		</Switch>
-	</Layout>
-	: null);
+	return (firebaseUser ?
+		<Layout>
+			<Switch>
+				<Route exact path="/dashboard/" component={Home} />
+				<Route exact path="/dashboard/messages" component={Messages} />
+				<Route exact path="/dashboard/user" component={UserConfig} />
+				{routes}
+				<Route component={NotFound} />
+			</Switch>
+		</Layout>
+		: null);
 }
 
 export default Dashboard;

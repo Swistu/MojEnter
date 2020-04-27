@@ -5,11 +5,12 @@ import Card from '../../UI/Card/Card';
 import Input from '../../UI/Input/Input';
 import Spinner from '../../UI/Spinner/Spinner';
 import useForm from '../../../hooks/useForm/useForm';
+import { useSelector } from 'react-redux';
 
 const AssignOrder = () => {
   let itemsToCheck;
   const [isValidatingAssign, setIsValidatingAssign] = useState(false);
-
+  const { firebaseUser } = useSelector(state => state.authenticationReducer);
   const renderInputs = {
     payLoad: [
       {
@@ -68,7 +69,7 @@ const AssignOrder = () => {
                 "orderUniqueID": data.orderUniqueID
               })
             );
-            
+
             // Delete from unnasigned form when others done
             Promise.all(promises).then((res) => {
               unassignedOrdersRef.remove();
@@ -86,32 +87,43 @@ const AssignOrder = () => {
     } // checkUser
   } // assignOrderHandler()
 
+  console.log(firebaseUser);
 
+  const sendMail = () => {
+    auth().currentUser.sendEmailVerification();
+  }
 
   return (
     <React.Fragment>
       <Card>
-        <form onSubmit={handleSubmit}>
-          {
-            isValidatingAssign ? <Spinner /> :
-              renderInputs.payLoad.map((res) => {
-                if (res.type !== "submit")
-                  return <React.Fragment key={res.name}>
-                    <Input
-                      {...res}
-                      onChange={handleChange}
-                      value={values[res.name]}
-                      className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
-                    />
-                    {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
-                  </React.Fragment>
-                else
-                  return <React.Fragment key={res.name}>
-                    <Input {...res} />
-                  </React.Fragment>
-              })
-          }
-        </form>
+        {firebaseUser.emailVerified ?
+          <form onSubmit={handleSubmit}>
+            {
+              isValidatingAssign ? <Spinner /> :
+                renderInputs.payLoad.map((res) => {
+                  if (res.type !== "submit")
+                    return <React.Fragment key={res.name}>
+                      <Input
+                        {...res}
+                        onChange={handleChange}
+                        value={values[res.name]}
+                        className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
+                      />
+                      {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
+                    </React.Fragment>
+                  else
+                    return <React.Fragment key={res.name}>
+                      <Input {...res} />
+                    </React.Fragment>
+                })
+            }
+          </form> :
+          <React.Fragment>
+            Wyślij email weryfikacyjny, aby aktywować konto.
+            <Input type="button" className="btn btn--light" onClick={sendMail} value="Wyślij" />
+          </React.Fragment>
+        }
+
       </Card>
     </React.Fragment>
   )

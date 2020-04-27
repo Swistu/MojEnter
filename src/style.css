@@ -3,6 +3,7 @@
   outline: 0;
   margin: 0;
   padding: 0;
+  font-family: 'Rubik', sans-serif;;
 }
 :root{
   --primary: #7c8798;
@@ -82,7 +83,7 @@ th{
   display: block;
   font-size: 1.6rem;
   color: var(--dark);
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   text-align: left;
 }
 

@@ -1,0 +1,27 @@
+.chatPeople{
+  color: #7c8798;
+  border-top: 1px solid #edf2f9;
+  margin-left:-25px;
+  margin-right: -25px;
+  margin-top: 15px;
+}
+.allMessages{
+  padding: 25px;
+}
+.allMessages p{ 
+  font-size: 14px;
+}
+.person{
+  padding: 10px 25px;
+  border-bottom: 1px solid #edf2f9;
+}
+.person p{
+  margin: 0;
+}
+.messageAuthor{
+  font-size: 1.5rem;
+}
+.messageDesc, .messageTime{
+  color: #9eabc0;
+  font-size: 1.2rem;
+}

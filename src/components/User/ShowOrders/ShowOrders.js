@@ -56,14 +56,11 @@ const ShowOrders = (props) => {
   return (
     <React.Fragment>
       {/* <h1 className="page__title">Zlecenia</h1> */}
-      <div style={{ display: "flex", flexDirection: "column" }}>
+
+      <Card>
         <Input type="button" className="btn btn--light " value="Wszystkie Zlecenia" />
         <Input type="button" className="btn btn--warning " value="Zlecenia w trakcie" />
         <Input type="button" className="btn btn--success " value="Zrealizowane Zlecenia" />
-        {/* <Input type="button" className="btn btn--danger " value="Niezrealizowne zlecenia" /> */}
-      </div>
-      <Card>
-
         {listOfOrders ? <div className="table-responsive">
           <table className="table">
             <thead>
