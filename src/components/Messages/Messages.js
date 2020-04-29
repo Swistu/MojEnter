@@ -28,7 +28,7 @@ const Messages = ({ history, ...props }) => {
         const keyOfHistory = Object.keys(data);
         const historyLength = keyOfHistory.length;
 
-        setContactItem(keyOfHistory.map((orderMessageUID, i) => {
+        const test = keyOfHistory.map((orderMessageUID, i) => {
           return <div className="message__item" key={orderMessageUID} onClick={() => { setOrderID(data[orderMessageUID].orderID); setOrderUniqueID(orderMessageUID); }}>
             <div className="message__image">
               <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="image-cirlce" alt="" />
@@ -45,7 +45,8 @@ const Messages = ({ history, ...props }) => {
               </div>
             </div>
           </div>
-        }));
+        })
+        setContactItem(test.reverse());
       } else {
         setContactItem(<p style={{ textAlign: "center", padding: "20px" }}>Utwórz rozmowe, aby dodać ją do listy</p>)
       }
@@ -147,6 +148,7 @@ const Messages = ({ history, ...props }) => {
 
   return (
     <React.Fragment>
+      <a href="tel:+48600153737" >Zadzwoń!</a>
       <Card style={{ paddingBottom: "0" }}>
         {/* <h5 onClick={() => history.push({ pathname: `/dashboard/`})}>Utwórz nową wiadomość</h5> */}
         <h2>Wiadomości</h2>
@@ -156,7 +158,7 @@ const Messages = ({ history, ...props }) => {
           </div>
 
           <div className="chat__box">
-            {orderID !== null ? <p style={{ textAlign: "center" }}>Zlecenia {orderID}</p> : null}
+            {orderID !== null ? <p style={{ textAlign: "center" }}>Zlecenie {orderID}</p> : null}
             {orderMessages}
             {orderID !== null ? <div className="createNewMessage">
               <Input type="text" placeholder="Napisz wiadomość" id="newMessage" value={newMessage} onChange={(e) => { setNewMessage(e.target.value) }} />
