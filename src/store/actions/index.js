@@ -8,12 +8,12 @@ export const modal = (type, title, component) => {
   }
 }
 
-export const authentication = (firebaseUser, data) => {
+export const authentication = (firebaseUser, realtimeDatabaseUser) => {
   return {
     type: 'AUTHENTICATION',
     payLoad: {
       firebaseUser,
-      data
+      realtimeDatabaseUser
     }
   }
 }

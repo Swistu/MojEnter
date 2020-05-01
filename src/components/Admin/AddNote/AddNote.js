@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import Spinner from '../../UI/Spinner/Spinner';
 import Input from '../../UI/Input/Input';
 import { database } from 'firebase';
-const AddNote = ({ orderUID, ...props }) => {
 
-  const [loading, setLoading] = useState(true);
+const AddNote = ({ orderUID }) => {
+
   const [currentMemo, setCurrentMemo] = useState();
-  const [loadingMemo, setLoadingMemo] = useState(true);
   const [content, setContent] = useState("");
 
   useEffect(() => {
@@ -18,10 +16,8 @@ const AddNote = ({ orderUID, ...props }) => {
         console.log(data);
 
         setCurrentMemo(data);
-        setLoadingMemo(false);
       } else {
         console.log(snapshot);
-        setLoadingMemo(false);
       }
     })
   }, [orderUID])
@@ -35,8 +31,7 @@ const AddNote = ({ orderUID, ...props }) => {
 
   return (
     <React.Fragment>
-      {loadingMemo ? <Spinner /> : <Editor
-        onInit={() => setLoading(false)}
+      <Editor
         apiKey="5pm48o3ipn3vwvjvx337kxdgnt1bsdaxlgbrw5s9e9cdv89w"
         initialValue={currentMemo}
         init={{
@@ -48,13 +43,9 @@ const AddNote = ({ orderUID, ...props }) => {
             'searchreplace visualblocks code',
             'insertdatetime media table paste wordcount'
           ],
-          toolbar:
-            'undo redo | formatselect | bold italic | \
-            alignleft aligncenter alignright | \
-            bullist numlist outdent indent image',
           inline_styles: true
         }}
-        onChange={(e) => setContent(e.target.getContent())} />}
+        onChange={(e) => setContent(e.target.getContent())} />
 
       <Input type="button" className="btn btn--success" value="Zatwierdź" onClick={addMemo} />
     </React.Fragment>

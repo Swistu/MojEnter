@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
-import { auth } from 'firebase';
 import Card from '../UI/Card/Card';
 
 const Home = () => {
-  const {firebaseUser, data} = useSelector(state => state.authenticationReducer);
+  const { realtimeDatabaseUser } = useSelector(state => state.authenticationReducer);
 
   return (
     <React.Fragment>
-      <p>Witaj{data.name? ", " + data.name : null} w panelu.</p>
+      <p>Witaj{realtimeDatabaseUser.name? ", " + realtimeDatabaseUser.name : null} w panelu.</p>
       <p></p>
       <h4 className="page__title">Najnowsze wiadomości</h4>
       <Card>

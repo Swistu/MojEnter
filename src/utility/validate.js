@@ -1,5 +1,5 @@
 const validate = (values) => {
-  let errors = {};
+  const errors = {};
   const itemsToCheck = Object.keys(values);
 
   itemsToCheck.map((fieldName) => checkItem(fieldName));
@@ -42,7 +42,6 @@ const validate = (values) => {
         }
         break;
       case "passwordFB":
-        console.log(values);
         if (!values.passwordFB) {
           errors.passwordFB = "Proszę podać hasło";
         } else if (values.passwordFB.length < 6) {
@@ -72,7 +71,6 @@ const validate = (values) => {
           errors.unsignedOrderNumber = "Proszę podać numer zlecenia";
         }
         break;
-
 
       default:
         if (!values[fieldName] && fieldName !== "sendForm") {

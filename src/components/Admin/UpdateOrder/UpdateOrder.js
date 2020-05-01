@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import { database } from 'firebase';
 
-import Spinner from '../../UI/Spinner/Spinner';
 import Input from '../../UI/Input/Input';
 
 const UpdateOrder = ({ orderUID, ...props }) => {
@@ -53,10 +52,6 @@ const UpdateOrder = ({ orderUID, ...props }) => {
             'searchreplace visualblocks code',
             'insertdatetime media table paste wordcount'
           ],
-          toolbar:
-            'undo redo | formatselect | bold italic | \
-            alignleft aligncenter alignright | \
-            bullist numlist outdent indent image',
           inline_styles: true,
           height: 200
         }}

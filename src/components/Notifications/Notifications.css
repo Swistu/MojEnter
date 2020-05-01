@@ -1,0 +1,31 @@
+.notifications .message__item{
+  border-top: 1px solid #edf2f9;
+}
+#notifications{
+  display: flex;
+  flex-direction: column-reverse;
+}
+#notifications .message__item:nth-last-child(n + 5){
+  display: none;
+}
+.notifications .message__item:hover{
+  background-color: #e8eaec;
+  cursor: pointer;
+}
+.notification__image{
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #22ca80;
+}
+.notification__image .fas{
+  color: #ffffff;
+}
+.message__image img{
+  width: 40px;
+  height: 40px;
+}
+
+

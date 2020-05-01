@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { authentication } from '../../../store/actions';
-
 import { auth, database } from 'firebase';
-import NavItem from './NavItem/NavItem';
+
+import { authentication } from '../../../store/actions';
+import checkNotifications from '../../../utility/checkNotifications';
+import NavItem from '../../NavItem/NavItem';
+import Notifications from '../../Notifications/Notifications';
 
 import './Header.css';
-import Input from '../../UI/Input/Input';
 
-const Header = ({ ...props }) => {
+const Header = ({ history }) => {
 	const dispatch = useDispatch();
 	const { firebaseUser } = useSelector(state => state.authenticationReducer);
 
@@ -16,8 +17,8 @@ const Header = ({ ...props }) => {
 	const [toggleSupportMenu, setToggleSupportMenu] = useState(false);
 	const [toggleExtendedSupportMenu, setToggleExtendedSupportMenu] = useState(false);
 	const [routes, setRoutes] = useState();
-
 	const [extendedMenuLinks, setExtendedMenuLinks] = useState();
+	const [notificationsNumber, setNotificationsNumber] = useState(0);
 
 	useEffect(() => {
 		if (firebaseUser) {
@@ -35,7 +36,7 @@ const Header = ({ ...props }) => {
 
 									<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
 									<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/assign-order" icon="file-download" onClick={toggleMenuHandler} />
-									<NavItem type="link" name="Wiadomości" to="/dashboard/messages" icon="comments" onClick={toggleMenuHandler} />
+									{/* <NavItem type="link" name="Wiadomości" to="/dashboard/messages" icon="comments" onClick={toggleMenuHandler} /> */}
 
 									{/* <NavItem type="group" name="Ustawienia" onClick={toggleMenuHandler} />
 									<NavItem type="link" name="Konto" to="/dashboard/user" icon="user-cog" onClick={toggleMenuHandler} /> */}
@@ -84,11 +85,17 @@ const Header = ({ ...props }) => {
 								</React.Fragment>
 							)
 							break;
+							default:
+								break;
 					}
 				}
-			})
+			});
 		}
-	}, []);
+		const logOut = () => {
+			dispatch(authentication(null, null));
+			auth().signOut();
+		}
+	}, [firebaseUser, dispatch]);
 
 	const toggleMenuHandler = () => {
 		setToggleMenu(toggleMenu => !toggleMenu);
@@ -103,11 +110,17 @@ const Header = ({ ...props }) => {
 	const toggleExtendedSupportMenuHandler = () => {
 		setToggleExtendedSupportMenu(toggleExtendedSupportMenu => !toggleExtendedSupportMenu);
 	}
-
 	const logOut = () => {
 		dispatch(authentication(null, null));
 		auth().signOut();
 	}
+
+
+	const notificationsNumberHandler = (number) => {
+		setNotificationsNumber(number);
+	}
+
+	console.log(notificationsNumber);
 	return (
 		<header className="main__header">
 			<div className={`main__menu ${toggleSupportMenu ? "hide-shadow" : ""}`}>
@@ -121,10 +134,9 @@ const Header = ({ ...props }) => {
 				<div className="logo">
 					<a href="/dashboard">
 						<picture>
-							<source media="(min-width: 768px) and (max-width: 1170px)" srcset="https://lh6.googleusercontent.com/-itERaVqG-kg/AAAAAAAAAAI/AAAAAAAAAAA/A1g0tvNwCsY/s48-p-k-no-ns-nd/photo.jpg" />
+							<source media="(min-width: 768px) and (max-width: 1170px)" srcSet="https://lh6.googleusercontent.com/-itERaVqG-kg/AAAAAAAAAAI/AAAAAAAAAAA/A1g0tvNwCsY/s48-p-k-no-ns-nd/photo.jpg" />
 							<img src="https://taniej.net/skins/default/rwd_shoper/images/logo.png" alt="Enter Serwis" />
 						</picture>
-						{/* <img src="https://lh6.googleusercontent.com/-itERaVqG-kg/AAAAAAAAAAI/AAAAAAAAAAA/A1g0tvNwCsY/s48-p-k-no-ns-nd/photo.jpg" alt="Enter Serwis" /> */}
 					</a>
 				</div>
 				<div className="menu-more fas fa-ellipsis-h" onClick={toggleSupportMenuHandler}></div>
@@ -136,8 +148,15 @@ const Header = ({ ...props }) => {
 			</nav>
 			<div className={`support__menu ${toggleSupportMenu ? "show" : ""}`}>
 				<ul className="support__menu-options" >
-					<NavItem type="icon" icon="bell" onClick={toggleExtendedSupportMenuHandler} />
-					{/* <NavItem type="icon" icon="cog" onClick={toggleExtendedSupportMenuHandler} /> */}
+					<NavItem type="icon" icon="bell" style={{position: "relative"}} onClick={() => {
+						toggleExtendedSupportMenuHandler();
+						setExtendedMenuLinks(
+							<React.Fragment>
+								<Notifications history={history} toggleSupportMenuHandler={toggleSupportMenuHandler}/>
+							</React.Fragment>)
+					}}><div id="notifications__number" className="rounded-circle">{checkNotifications}</div></NavItem>
+
+
 					<NavItem type="icon" icon="user-circle" onClick={() => {
 						toggleExtendedSupportMenuHandler();
 						setExtendedMenuLinks(

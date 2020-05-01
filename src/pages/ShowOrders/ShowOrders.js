@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from 'react'
 import { database } from 'firebase';
 
-import Card from '../../UI/Card/Card';
-import Spinner from '../../UI/Spinner/Spinner';
-import Input from '../../UI/Input/Input';
+import Card from '../../components/UI/Card/Card';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import Input from '../../components/UI/Input/Input';
 
-const ShowOrders = (props) => {
-  const { history } = props;
-
+const ShowOrders = ({ history }) => {
   const [listOfOrders, setListOfOrders] = useState(null);
 
   useEffect(() => {
     database().ref("orders").on("value", (snapshot) => {
       if (snapshot && snapshot.val()) {
-
         const data = snapshot.val();
         const listOfOrdersUID = Object.keys(data);
-        let i = 1;
-        setListOfOrders(listOfOrdersUID.map(order => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-          <td>{i++}</td>
+
+        setListOfOrders(listOfOrdersUID.map((order, i) => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
+          <td>{++i}</td>
           <td>{data[order].orderID}</td>
           <td>{data[order].client}</td>
           <td>{data[order].telNumber}</td>
@@ -28,17 +25,17 @@ const ShowOrders = (props) => {
         </tr>))
       } else {
         console.error("Brak danych pod danym endpoint'em");
-        setListOfOrders(<h2>Brak danych</h2>)
+        setListOfOrders(<React.Fragment><tr></tr><h2>Brak danych</h2></React.Fragment>)
       }
     })
-  }, [])
 
-  const redirectToOrder = (order) => {
-    history.push({ pathname: `/dashboard/show-order`, state: { "orderUID": order } });
-  }
+    const redirectToOrder = (order) => {
+      history.push({ pathname: `/dashboard/show-order`, state: { "orderUID": order } });
+    }
+  }, [history])
+
   return (
     <React.Fragment>
-      {/* <h1 className="page__title">Zlecenia</h1> */}
       <Card>
         <Input type="button" className="btn btn--light " value="Wszystkie Zlecenia" />
         <Input type="button" className="btn btn--warning " value="Zlecenia w trakcie" />

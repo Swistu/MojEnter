@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { database } from 'firebase';
 
+import Input from '../../components/UI/Input/Input';
+import Card from '../../components/UI/Card/Card';
+import useForm from '../../hooks/useForm/useForm';
+
 import './AddOrder.css';
-import Input from '../../UI/Input/Input';
-import Card from '../../UI/Card/Card';
-import useForm from '../../../hooks/useForm/useForm';
+
 
 const AddOrder = () => {
 	const today = new Date();
@@ -12,14 +14,12 @@ const AddOrder = () => {
 	const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
 	const orderAddDate = today.toLocaleDateString('pl-PL', dateOptions);
 
-	let todayMonth;
-	let itemsToCheck;
+	const todayDate = () => {
+		const year = today.getFullYear();
+		const month = today.getMonth() < 9 ? "0" + (today.getMonth() + 1) : today.getMonth() + 1
 
-	if (today.getMonth() < 9)
-		todayMonth = "0" + (today.getMonth() + 1);
-	else
-		todayMonth = (today.getMonth() + 1);
-	const todayDate = today.getFullYear() + "/" + todayMonth + "/";
+		return year + "/" + month;
+	}
 
 	const renderInputs = {
 		payLoad: [
@@ -27,7 +27,7 @@ const AddOrder = () => {
 				"type": "text",
 				"descName": "Zlecenie nr:",
 				"name": "orderNumber",
-				"value": todayDate
+				"value": todayDate()
 			},
 			{
 				"type": "text",
@@ -105,29 +105,23 @@ const AddOrder = () => {
 	};
 
 
+	const itemsToCheck = () => {
+		return renderInputs.payLoad.reduce((previousValue, currentValue, i) => {
+			if (i === 1)
+				return { [previousValue.name]: previousValue.value ? previousValue.value : "", [currentValue.name]: currentValue.value ? currentValue.value : "" }
+			else
+				return { ...previousValue, [currentValue.name]: currentValue.value ? currentValue.value : "" }
+		});
+	}
 
-	renderInputs.payLoad.map(res => {
-		itemsToCheck = {
-			...itemsToCheck,
-			[res.name]: res.value ? res.value : ""
-		}
-
-		return null;
-	});
-
-	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(addOrder, itemsToCheck);
-	const [addingOrder, setAddingOrder] = useState(false);
-
-	function addOrder(e) {
-		setAddingOrder(true);
-
+	const addOrder = () => {
 		const ordersRef = database().ref('orders/').push();
-		const orderUniqueID = ordersRef.key;
-		
+		const orderUID = ordersRef.key;
+
 		const unassignedOrdersRef = database().ref('unassignedOrders/').push();
-		const unassignedOrderUniqueID = unassignedOrdersRef.key;
-		
-		const ordersHistoryRef = database().ref('ordersHistory/' + orderUniqueID).push();
+		const unassignedOrderUID = unassignedOrdersRef.key;
+
+		const ordersHistoryRef = database().ref('ordersHistory/' + orderUID).push();
 
 		const order = {
 			"client": values.client,
@@ -144,7 +138,7 @@ const AddOrder = () => {
 			"vendorComment": values.vendorComment,
 		}
 		const unassignedOrder = {
-			"orderUniqueID": orderUniqueID,
+			"orderUID": orderUID,
 			"password": "123",
 		}
 
@@ -157,43 +151,43 @@ const AddOrder = () => {
 		ordersHistoryRef.set(orderHistory)
 			.catch(error => console.error(error));
 		ordersRef.set(order)
-			.then()
 			.catch(error => console.error(error));
 
 		unassignedOrdersRef.set(unassignedOrder)
-			.then(res => {
-				setAddingOrder(false);
-
-				document.getElementById("test").innerHTML = "Numer zlecenie dla klienta: " + unassignedOrderUniqueID;
+			.then(() => {
+				document.getElementById("test").innerHTML = "Numer zlecenie dla klienta: " + unassignedOrderUID;
 			})
 			.catch(error => {
 				console.error(error)
-				setAddingOrder(false);
 			});
 	}
+
+	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(addOrder, itemsToCheck());
 
 	return (
 		<React.Fragment>
 			<Card>
 				<h1 className="card__title">Dodaj zlecenie</h1>
 				<form onSubmit={handleSubmit}>
-					{renderInputs.payLoad.map((res) => {
-						if (res.type !== "submit")
-							return <React.Fragment key={res.name}>
-								<Input
-									{...res}
-									onChange={handleChange}
-									value={values[res.name]}
-									className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
-								/>
-								{errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
-							</React.Fragment>
-						else
-							return <React.Fragment key={res.name}>
-								<Input {...res} />
-								{Object.entries(errors).length === 0 && errors.constructor === Object ? null : <p className={"feedback feedback--invalid"}>{"Proszę poprawić błędy w formularzu"}</p>}
-							</React.Fragment>
-					})}
+					{
+						renderInputs.payLoad.map((res) => {
+							if (res.type !== "submit")
+								return <React.Fragment key={res.name}>
+									<Input
+										{...res}
+										onChange={handleChange}
+										value={values[res.name]}
+										className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
+									/>
+									{errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
+								</React.Fragment>
+							else
+								return <React.Fragment key={res.name}>
+									<Input {...res} />
+									{Object.entries(errors).length === 0 && errors.constructor === Object ? null : <p className={"feedback feedback--invalid"}>{"Proszę poprawić błędy w formularzu"}</p>}
+								</React.Fragment>
+						})
+					}
 					<div id="test"></div>
 				</form>
 			</Card>

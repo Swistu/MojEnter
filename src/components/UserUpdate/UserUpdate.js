@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { database } from 'firebase';
 import Input from '../UI/Input/Input';
 import useForm from '../../hooks/useForm/useForm';
 import { useSelector } from 'react-redux';
 
 const UserUpdate = () => {
-  const { firebaseUser, data } = useSelector(state => state.authenticationReducer)
+  const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer)
 
-  let itemsToCheck;
   const renderInputs = {
     payLoad: [
       {
@@ -15,21 +14,21 @@ const UserUpdate = () => {
         "descName": "Nazwa:",
         "placeholder": "Imie, nazwisko lub firma",
         "name": "displayName",
-        "value": data.name ? data.name : ""
+        "value": realtimeDatabaseUser.name ? realtimeDatabaseUser.name : ""
       },
       {
         "type": "tel",
         "descName": "Telefon:",
         "placeholder": "Wprowadź numer telefonu",
         "name": "telNumber",
-        "value": data.phoneNumber ? data.phoneNumber : ""
+        "value": realtimeDatabaseUser.phoneNumber ? realtimeDatabaseUser.phoneNumber : ""
       },
       {
         "type": "text",
         "descName": "Adres:",
         "placeholder": "Wprowadź ulice",
         "name": "address",
-        "value": data.address ? data.address : ""
+        "value": realtimeDatabaseUser.address ? realtimeDatabaseUser.address : ""
       },
       {
         "type": "submit",
@@ -39,23 +38,25 @@ const UserUpdate = () => {
       },
     ]
   };
-  renderInputs.payLoad.map(res => {
-    itemsToCheck = {
-      ...itemsToCheck,
-      [res.name]: res.value ? res.value : ""
-    }
-  });
 
-  const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(updateData, itemsToCheck);
+  const itemsToCheck = () => {
+    return renderInputs.payLoad.reduce((previousValue, currentValue, i) => {
+      if (i === 1)
+        return { [previousValue.name]: previousValue.value ? previousValue.value : "", [currentValue.name]: currentValue.value ? currentValue.value : "" }
+      else
+        return { ...previousValue, [currentValue.name]: currentValue.value ? currentValue.value : "" }
+    });
+  }
 
-  function updateData() {
+  const updateData = () => {
     database().ref("users/" + firebaseUser.uid).update({
       name: values.displayName,
       phoneNumber: values.telNumber,
       address: values.address,
     });
   }
-
+  
+  const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(updateData, itemsToCheck());
   return (
     <React.Fragment>
       <form onSubmit={handleSubmit}>

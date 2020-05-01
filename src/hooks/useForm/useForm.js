@@ -24,7 +24,7 @@ const useForm = (callback , checkItems) => {
     if (Object.keys(errors).length === 0 && isSubmitting) {
       callback();
     }
-  }, [errors]);
+  }, [errors, isSubmitting, callback]);
 
   return{
     handleChange,

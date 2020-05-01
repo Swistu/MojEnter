@@ -178,6 +178,10 @@ table{
   margin: initial;
   padding: initial;
 }
-.image-cirlce{
+.rounded-circle{
   border-radius: 50%;
+}
+.show{
+  display: block !important;
+  visibility: visible !important;
 }

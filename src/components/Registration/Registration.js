@@ -42,12 +42,10 @@ const Registration = ({ showRegisterHandler, ...props }) => {
       ...itemsToCheck,
       [res.name]: res.value ? res.value : ""
     }
+    return null;
   });
 
-  const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(signUp, itemsToCheck);
-
-  function signUp() {
-
+  const signUp = () => {
     setRegistrationInProgress(true);
     auth().createUserWithEmailAndPassword(values.emailFB, values.passwordFB)
       .then((data) => {
@@ -63,12 +61,16 @@ const Registration = ({ showRegisterHandler, ...props }) => {
       })
       .catch(error => {
         console.error(error);
-        if (error.code = "auth/email-already-in-use")
+        if (error.code === "auth/email-already-in-use") {
           errors.emailFB = "Konto z podanym email już istnieje";
+        }
         setRegistrationInProgress(false);
       }
       );
   }
+
+  const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(signUp, itemsToCheck);
+
 
   return (
     registrationInProgress ? <Spinner /> : <React.Fragment>

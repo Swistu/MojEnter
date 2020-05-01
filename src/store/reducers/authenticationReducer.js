@@ -7,13 +7,11 @@ const initialState = {
 const authenticationReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.AUTHENTICATION:
-      state = {
+      return {
         ...state,
         firebaseUser: action.payLoad.firebaseUser,
-        data: action.payLoad.data
+        realtimeDatabaseUser: action.payLoad.realtimeDatabaseUser
       }
-      return state;
-      break;
     default:
       return state;
   }
