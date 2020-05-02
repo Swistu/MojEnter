@@ -21,10 +21,18 @@ const NavItem = ({ name, icon, className, type, toggleMenuHandler, highlightLink
             <i className={`fas fa-${icon}`} {...props}>{children}</i>
           </li>
         );
+      case "icon-withText":
+        return (
+          <li className="nav__icon">
+            <i className={`fas fa-${icon}`} {...props}></i>
+            {children}
+          </li>
+        );
       case "icon-link":
         return (
           <li className="nav__icon-link">
-            <NavLink exact={true} {...props}><i className={`fas fa-${icon}`}>{children}</i></NavLink>
+            <NavLink exact={true} {...props}><i className={`fas fa-${icon}`}></i>{children}</NavLink>
+
           </li>
         );
       case "divider":

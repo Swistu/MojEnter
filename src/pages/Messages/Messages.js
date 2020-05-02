@@ -33,7 +33,6 @@ const Messages = ({ history }) => {
         const data = snapshot.val();
         const keyOfAllOrders = Object.keys(data);
 
-
         setContactItem(keyOfAllOrders.map((orderMessageUID, i) => <div className="message__item" key={orderMessageUID} onClick={() => { setOrderUID(orderMessageUID); }}>
           <div className="message__image">
             <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
@@ -139,6 +138,7 @@ const Messages = ({ history }) => {
           "orderUID": orderUID,
           "time": dateTime,
           "type": "Message",
+          "read": "false",
         }
         notificationsRef.set(notificationsData)
           .catch(error => console.error(error));
@@ -149,6 +149,7 @@ const Messages = ({ history }) => {
           "orderUID": orderUID,
           "time": dateTime,
           "type": "Message",
+          "read": "false",
         }
         notificationsRef.set(notificationsData)
           .catch(error => console.error(error));

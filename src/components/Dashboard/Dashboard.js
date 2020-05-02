@@ -52,7 +52,7 @@ const Dashboard = ({ history }) => {
 	}, [firebaseUser, history, realtimeDatabaseUser]);
 
 	return (firebaseUser ?
-		<Layout history={history}>
+		<Layout>
 			<Switch>
 				<Route exact path="/dashboard/" component={Home} />
 				<Route exact path="/dashboard/user" component={UserConfig} />

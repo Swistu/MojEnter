@@ -1,6 +1,9 @@
 .notifications .message__item{
   border-top: 1px solid #edf2f9;
 }
+.notifications .message__item:last-child{
+  border-top: none;
+}
 #notifications{
   display: flex;
   flex-direction: column-reverse;
@@ -28,4 +31,16 @@
   height: 40px;
 }
 
-
+.readMore{
+  border-top: 1px solid #edf2f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 8px;
+  color: var(--dark);
+  font-weight: 500;
+}
+.readMore:hover{
+  color: #05080c;
+  cursor: pointer;
+}

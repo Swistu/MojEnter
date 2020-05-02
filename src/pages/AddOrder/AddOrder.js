@@ -1,18 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { database } from 'firebase';
+import { useDispatch } from 'react-redux';
 
+import { modal } from '../../store/actions';
+import { SHOW } from '../../store/actionTypes'
+import useForm from '../../hooks/useForm/useForm';
+
+import OrderSummary from '../../components/OrderSummary/OrderSummary'
 import Input from '../../components/UI/Input/Input';
 import Card from '../../components/UI/Card/Card';
-import useForm from '../../hooks/useForm/useForm';
 
 import './AddOrder.css';
 
 
 const AddOrder = () => {
 	const today = new Date();
+  const dispatch = useDispatch();
 
 	const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
 	const orderAddDate = today.toLocaleDateString('pl-PL', dateOptions);
+	const [addingOrder, setAddingOrder] = useState(null);
 
 	const todayDate = () => {
 		const year = today.getFullYear();
@@ -104,7 +111,6 @@ const AddOrder = () => {
 		]
 	};
 
-
 	const itemsToCheck = () => {
 		return renderInputs.payLoad.reduce((previousValue, currentValue, i) => {
 			if (i === 1)
@@ -115,6 +121,7 @@ const AddOrder = () => {
 	}
 
 	const addOrder = () => {
+		setAddingOrder(true);
 		const ordersRef = database().ref('orders/').push();
 		const orderUID = ordersRef.key;
 
@@ -160,10 +167,15 @@ const AddOrder = () => {
 			.catch(error => {
 				console.error(error)
 			});
+
+		setAddingOrder(false);
 	}
 
-	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(addOrder, itemsToCheck());
+	const checkOrder = () => {
+		dispatch(modal(SHOW, "Podsumowanie", <OrderSummary values={values} addOrder={addOrder} addingOrder={addingOrder}/>));
+	}
 
+	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(checkOrder, itemsToCheck());
 	return (
 		<React.Fragment>
 			<Card>

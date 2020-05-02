@@ -6,12 +6,12 @@ import Modal from '../UI/Modal/Modal';
 
 import './Layout.css';
 
-const Layout = ({ history, children }) => {
+const Layout = ({ children }) => {
     const { title, component, showModal} = useSelector(state => state.modalReducer);
 
     return (
         <div className="wrapper">
-            <Header history={history}/>
+            <Header />
             <main>
                 {children}
             </main>

@@ -87,6 +87,7 @@ const AssignOrder = () => {
             "time": dateTime,
             "orderUID": data.orderUID,
             "type": "NewOrder",
+            "read": "false",
           }
           notificationsRef.set(notificationsData)
             .catch(error => console.error(error));
