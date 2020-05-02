@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Switch, Route } from "react-router-dom";
 import { auth, database } from 'firebase';
 import { useDispatch } from 'react-redux';
@@ -9,11 +9,14 @@ import Login from './pages/Login/Login';
 import NotFound from './pages/NotFound/NotFound';
 
 import Dashboard from './components/Dashboard/Dashboard';
+import PreLoader from './components/PreLoader/PreLoader';
 
 import './style.css';
 
 const App = () => {
 	const dispatch = useDispatch();
+
+	const [showPreLoader, setShowPreLoader] = useState(true);
 
 	useEffect(() => {
 		auth().onAuthStateChanged(firebaseUser => {
@@ -33,21 +36,26 @@ const App = () => {
 							"providerId": firebaseUser.providerData[0].providerId,
 							"uid": firebaseUser.uid,
 						}
-
 						dispatch(authentication(firebaseData, realtimeDatabaseUser));
+
+						setTimeout(() => {
+							setShowPreLoader(false);
+						}, 200)
 					}
 				})
-			}
+			} else setShowPreLoader(false);
 		});
 	}, [dispatch])
 
 	return (
-		<Switch>
-			<Route exact path="/" component={Login} />
-			<Route path="/dashboard" component={Dashboard} />
-
-			<Route component={NotFound} />
-		</Switch>
+		<React.Fragment>
+			<PreLoader show={showPreLoader} />
+			<Switch>
+				<Route exact path="/" component={Login} />
+				<Route path="/dashboard" component={Dashboard} />
+				<Route component={NotFound} />
+			</Switch>
+		</React.Fragment>
 	)
 }
 export default App;

@@ -23,25 +23,25 @@ const Dashboard = ({ history }) => {
 				case "Annomyous":
 					setRoutes(
 						<React.Fragment>
-							<Route exact path="/dashboard/assign-order" component={AssignOrder} />
+							<Route exact path="/dashboard/przypisz-zlecenie" component={AssignOrder} />
 						</React.Fragment>)
 					break;
 				case "User":
 					setRoutes(
 						<React.Fragment>
-							<Route exact path="/dashboard/assign-order" component={AssignOrder} />
-							<Route exact path="/dashboard/show-orders" component={ShowOrders} />
-							<Route exact path="/dashboard/show-order" component={ShowOrder} />
-							<Route exact path="/dashboard/messages" component={Messages} />
+							<Route exact path="/dashboard/przypisz-zlecenie" component={AssignOrder} />
+							<Route exact path="/dashboard/zlecenia" component={ShowOrders} />
+							<Route exact path="/dashboard/zlecenie" component={ShowOrder} />
+							<Route exact path="/dashboard/wiadomosci" component={Messages} />
 						</React.Fragment>)
 					break;
 				case "Admin":
 					setRoutes(
 						<React.Fragment>
-							<Route exact path="/dashboard/add-order" component={AddOrder} />
-							<Route exact path="/dashboard/show-orders" component={ShowOrders} />
-							<Route exact path="/dashboard/show-order" component={ShowOrder} />
-							<Route exact path="/dashboard/messages" component={Messages} />
+							<Route exact path="/dashboard/dodaj-zlecenie" component={AddOrder} />
+							<Route exact path="/dashboard/zlecenia" component={ShowOrders} />
+							<Route exact path="/dashboard/zlecenie" component={ShowOrder} />
+							<Route exact path="/dashboard/wiadomosci" component={Messages} />
 						</React.Fragment>)
 					break;
 				default:
@@ -55,7 +55,7 @@ const Dashboard = ({ history }) => {
 		<Layout>
 			<Switch>
 				<Route exact path="/dashboard/" component={Home} />
-				<Route exact path="/dashboard/user" component={UserConfig} />
+				<Route exact path="/dashboard/konto" component={UserConfig} />
 				{routes}
 				<Route component={NotFound} />
 			</Switch>

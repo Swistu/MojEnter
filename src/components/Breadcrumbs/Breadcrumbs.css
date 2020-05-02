@@ -1,0 +1,24 @@
+.breadcrumb{
+  margin-bottom: 35px;
+}
+.breadcrumb__list{
+  list-style-type: none;
+  display: flex;
+}
+.breadcrumb__item:not(:last-child)::after{
+  content: "/";
+  padding-left: 8px;
+  color: #ced4da;
+  font-size: 11px;
+}
+.breadcrumb__item{
+  text-transform: capitalize;
+  font-size: 1.4rem;
+}
+.breadcrumb__list, .breadcrumb__item a{
+  color: #9eabc0; 
+  line-height: 1.5;
+}
+.breadcrumb__item + .breadcrumb__item{
+  padding-left: 8px;
+}

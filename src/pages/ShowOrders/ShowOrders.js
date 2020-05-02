@@ -30,7 +30,7 @@ const ShowOrders = ({ history }) => {
     })
 
     const redirectToOrder = (order) => {
-      history.push({ pathname: `/dashboard/show-order`, state: { "orderUID": order } });
+      history.push({ pathname: `/dashboard/zlecenie`, state: { "orderUID": order } });
     }
   }, [history])
 

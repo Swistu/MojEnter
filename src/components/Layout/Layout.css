@@ -8,7 +8,7 @@
 }
 
 main{
-  padding: 35px;
+  padding: 33px 35px 30px;
   min-height: calc(100vh - 80px);
   font-size: 1.6rem;
   width: 100vw;

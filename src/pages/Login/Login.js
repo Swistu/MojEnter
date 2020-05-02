@@ -13,12 +13,16 @@ import './Login.css';
 const Login = ({ history }) => {
 	const { firebaseUser } = useSelector(state => state.authenticationReducer);
 
+	console.log(firebaseUser);
+
 	const [isLogging, setIsLogging] = useState(false);
 	const [showRegisterForm, setShowRegisterForm] = useState(false);
 
 	useEffect(() => {
 		if (firebaseUser) {
 			history.push("/dashboard");
+		} else {
+
 		}
 	}, [firebaseUser, history])
 
@@ -65,17 +69,15 @@ const Login = ({ history }) => {
 				setIsLogging(false);
 			});
 	}
-	
-	
-	
+
 	const signInGoogle = () => {
 		setIsLogging(true);
 		var provider = new auth.GoogleAuthProvider();
-		
+
 		auth().useDeviceLanguage();
 		auth().signInWithPopup(provider).then(function (data) {
 			const userRef = database().ref('users/' + data.user.uid);
-			
+
 			userRef.once("value", (snapshot) => {
 				if (!snapshot.exists()) {
 					const payLoad = {
@@ -89,14 +91,14 @@ const Login = ({ history }) => {
 			})
 		});
 	}
-	
+
 	const showRegisterHandler = () => {
 		setShowRegisterForm(!showRegisterForm)
 	}
-	
+
 	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(signIn, itemsToCheck());
 	return (
-		firebaseUser ? <Spinner /> :
+		<React.Fragment>
 			<div className="auth__box">
 				<div className="auth__image" style={{ backgroundImage: "url(https://cdn.pixabay.com/photo/2018/07/01/16/52/hardware-3509891_960_720.jpg)" }}>
 				</div>
@@ -131,6 +133,7 @@ const Login = ({ history }) => {
 					</div>
 				</div>
 			</div >
+		</React.Fragment>
 	);
 }
 

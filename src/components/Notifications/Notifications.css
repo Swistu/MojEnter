@@ -1,5 +1,6 @@
 .notifications .message__item{
   border-top: 1px solid #edf2f9;
+  padding: 10 15px;
 }
 .notifications .message__item:last-child{
   border-top: none;
@@ -8,6 +9,11 @@
   display: flex;
   flex-direction: column-reverse;
 }
+#notifications .message__item .message__sender{
+  color: #212529;
+  font-size: 14px;
+}
+
 #notifications .message__item:nth-last-child(n + 5){
   display: none;
 }
@@ -37,10 +43,16 @@
   justify-content: center;
   align-items: center;
   padding: 16px 8px;
-  color: var(--dark);
+  color: #6c757d;
   font-weight: 500;
 }
 .readMore:hover{
   color: #05080c;
   cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  #notifications {
+    width: 320px
+  }
 }

@@ -171,9 +171,14 @@ table{
 }
 
 .page__title{
-  word-wrap: break-word;
+  font-size: 1.8rem;
+  color: var(--dark);
+  font-weight: 500;
+  margin-bottom: 7px;
 }
-
+.page__title::first-letter{
+  text-transform: uppercase;
+}
 .initialStyles *{
   margin: initial;
   padding: initial;

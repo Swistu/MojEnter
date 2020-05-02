@@ -56,7 +56,10 @@
 .main__navigation ul li:first-child{
   margin-top: 20px;
 }
-
+.main__navigation i{
+  width: 30px;
+  text-align: center;
+}
 .support__menu{
   z-index: 99;
   position: fixed;
@@ -105,10 +108,10 @@
 .support__menu-options li i{
   font-size: 1.8rem;
 }
-.support__menu-options li:last-child i{
+.support__menu-options > li:last-child > i{
   font-size: 3rem;
 }
-.support__menu-options li:last-child{
+.support__menu-options > li:last-child{
   margin-left: auto;
 }
 .support__menu-submenu{
@@ -123,10 +126,31 @@
   flex-direction: column;
   background: #ffffff;
   border-radius: 2px;
-  box-shadow: rgba(169, 184, 200, 0.8) 0px 3px 12px -6px
+  box-shadow: rgba(169, 184, 200, 0.8) 0px 3px 12px -6px;
+  transition: 0;
+}
+.support__menu-submenu > li{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.support__menu-submenu > li:hover{
+  background-color: #e8eaec;
+  cursor: pointer;
 }
 .support__menu-submenu > li > a{
-  color: var(--dark);
+  display: flex;
+  margin: 0;
+  width: 100%;
+  color: #6c757d;
+  padding: 10px 16px;
+}
+.support__menu-submenu li *{
+  font-size: 1.6rem;
+}
+.support__menu-submenu li i{
+  width: 23px;
 }
 .support__menu-submenu > li.nav__divider{
   margin: 0;
@@ -187,12 +211,13 @@
   text-transform: uppercase;
   font-weight: 500;
 }
-.nav__icon i{
-  width: 19px;
-  height: 19px;
-}
 .menu-more{
   padding: 16px;
+}
+@media (max-width: 767px){
+  .support__menu.hideSubmenu .support__menu-options li .support__menu-submenu{
+    display: none;
+  }
 }
 @media (min-width: 768px){
   .main__menu .menu-more, .main__menu .navigation__toggler{
@@ -200,10 +225,24 @@
   }
   .support__menu-submenu{
     position: absolute;
-    width: 340px;
+    min-width: 200px;
+    width: auto;
+    max-width: 340px;
     top: 80px;
     left: -5px;
     box-shadow:rgba(0,0,0,.1) 1px 1px 15px ;
+  }
+  .support__menu.show .support__menu-options li:hover .support__menu-submenu{
+    display: flex;
+  }
+  .support__menu.hideSubmenu .support__menu-options li:hover .support__menu-submenu{
+    display: none;
+  }
+  .support__menu-submenu#menu__account{
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    left: unset; 
   }
   .main__menu {
     width: 65px;
@@ -226,13 +265,6 @@
     height: 80px;
     visibility: visible;
   }
-  .support__extended_menu{
-    top: 80px !important;
-    left: 65px;
-    width: calc(100% - 65px);
-    box-shadow: none;
-    border-bottom: 1px solid #edf2f9;
-  }
   .support__menu-options{
     height: 80px;
   }
@@ -240,6 +272,9 @@
 @media (min-width: 768px) and (max-width: 1170px) {
   .main__navigation .nav__group, .main__navigation .nav__divider, .main__navigation span.nav__link__name{
     display: none;
+  }
+  .main__navigation i{
+    width: auto;
   }
   .logo img {
     height: auto;
@@ -261,10 +296,6 @@
     width: 260px;
   }
   .support__menu{
-    left: 260px;
-    width: calc(100% - 260px);
-  }
-  .support__extended_menu{
     left: 260px;
     width: calc(100% - 260px);
   }
