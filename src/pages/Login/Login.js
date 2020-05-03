@@ -13,8 +13,6 @@ import './Login.css';
 const Login = ({ history }) => {
 	const { firebaseUser } = useSelector(state => state.authenticationReducer);
 
-	console.log(firebaseUser);
-
 	const [isLogging, setIsLogging] = useState(false);
 	const [showRegisterForm, setShowRegisterForm] = useState(false);
 
@@ -50,14 +48,12 @@ const Login = ({ history }) => {
 	};
 
 	const itemsToCheck = () => {
-		let allItems;
-
-		renderInputs.payLoad.map(res => {
-			allItems = { ...allItems, [res.name]: res.value ? res.value : "" }
-			return null;
+		return renderInputs.payLoad.reduce((previousValue, currentValue, i) => {
+			if (i === 1)
+				return { [previousValue.name]: previousValue.value ? previousValue.value : "", [currentValue.name]: currentValue.value ? currentValue.value : "" }
+			else
+				return { ...previousValue, [currentValue.name]: currentValue.value ? currentValue.value : "" }
 		});
-
-		return allItems;
 	}
 
 	const signIn = () => {

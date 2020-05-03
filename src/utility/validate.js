@@ -66,12 +66,11 @@ const validate = (values) => {
           errors.emailFB = "Zły adres email";
         }
         break;
-      case "unsignedOrderNumber":
-        if (!values.unsignedOrderNumber) {
-          errors.unsignedOrderNumber = "Proszę podać numer zlecenia";
+      case "unassignedOrderUID":
+        if (!values.unassignedOrderUID) {
+          errors.unassignedOrderUID = "Proszę podać numer zlecenia";
         }
         break;
-
       default:
         if (!values[fieldName] && fieldName !== "sendForm") {
           errors[fieldName] = "Pole wymagane";

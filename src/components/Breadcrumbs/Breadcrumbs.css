@@ -11,12 +11,12 @@
   color: #ced4da;
   font-size: 11px;
 }
-.breadcrumb__item{
+.breadcrumb__item, .breadcrumb__item a{
   text-transform: capitalize;
   font-size: 1.4rem;
-}
-.breadcrumb__list, .breadcrumb__item a{
   color: #9eabc0; 
+}
+.breadcrumb__list{
   line-height: 1.5;
 }
 .breadcrumb__item + .breadcrumb__item{

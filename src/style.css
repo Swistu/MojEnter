@@ -174,7 +174,7 @@ table{
   font-size: 1.8rem;
   color: var(--dark);
   font-weight: 500;
-  margin-bottom: 7px;
+  margin-bottom: 4px;
 }
 .page__title::first-letter{
   text-transform: uppercase;
@@ -189,4 +189,7 @@ table{
 .show{
   display: block !important;
   visibility: visible !important;
+}
+.text-light{
+  color: #b8c3d5;
 }

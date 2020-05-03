@@ -38,12 +38,11 @@ const Notifications = ({ toggleSupportMenuHandler }) => {
         case "NewOrder":
           setNotificationList(old => <React.Fragment>
             {old}
-            <div className="message__item" key={notification} onClick={() => { readNotifications(notification.key); toggleSupportMenuHandler(); history.push({ pathname: `/dashboard/show-order`, state: { "orderUID": notification.orderUID } }) }}>
+            <div className="message__item" key={notification} onClick={() => { readNotifications(notification.key);  history.push({ pathname: `/dashboard/zlecenie`, state: { "orderUID": notification.orderUID } }) }}>
               <div className="message__image">
                 <div className="rounded-circle notification__image">
                   <i className="fas fa-file-download"></i>
                 </div>
-                {/* <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" /> */}
               </div>
               <div className="message__item__details">
                 <div className="message__sender">
@@ -59,7 +58,7 @@ const Notifications = ({ toggleSupportMenuHandler }) => {
         case "Message":
           setNotificationList(old => <React.Fragment>
             {old}
-            <div className="message__item" key={notification} onClick={() => { readNotifications(notification.key); toggleSupportMenuHandler(); history.push({ pathname: `/dashboard/messages`, state: { "orderUID": notification.orderUID } }) }}>
+            <div className="message__item" key={notification} onClick={() => { readNotifications(notification.key);  history.push({ pathname: `/dashboard/wiadomosci`, state: { "orderUID": notification.orderUID } }) }}>
               <div className="message__image">
                 <div className="rounded-circle notification__image">
                   <i className="fas fa-comment-dots"></i>

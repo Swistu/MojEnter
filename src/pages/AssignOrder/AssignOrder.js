@@ -10,7 +10,7 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 
 const AssignOrder = () => {
   const [isValidatingAssign, setIsValidatingAssign] = useState(false);
-
+  const [orderAssigned, setOrderAssigned] = useState(false);
   const { firebaseUser } = useSelector(state => state.authenticationReducer);
 
   const renderInputs = {
@@ -41,63 +41,70 @@ const AssignOrder = () => {
 
   const assignOrder = () => {
     setIsValidatingAssign(true);
+    console.log("wchodze");
+    if (isValidatingAssign) {
+      console.log("sprawdzam");
 
-    const promises = [];
-    const unassignedOrdersRef = database().ref('unassignedOrders/' + values.unassignedOrderUID);
+      const promises = [];
+      const unassignedOrdersRef = database().ref('unassignedOrders/' + values.unassignedOrderUID);
 
-    unassignedOrdersRef.once("value", snapshot => {
-      if (snapshot && snapshot.val()) {
-        const data = snapshot.val();
+      unassignedOrdersRef.once("value", snapshot => {
+        if (snapshot && snapshot.val()) {
+          console.log("wszystko ok dodaje");
 
-        const userRef = database().ref('users/' + firebaseUser.uid);
-        const userOrders = database().ref('users/' + firebaseUser.uid + '/orders');
-        const ordersRef = database().ref('orders/' + data.orderUID);
+          const data = snapshot.val();
 
-        promises.push(
-          userRef.update({
-            "accountType": "User",
-          })
-        );
-        promises.push(
-          userOrders.push({
-            "orderUID": data.orderUID
-          })
-        );
-        promises.push(
-          ordersRef.update({
-            "userUID": firebaseUser.uid
-          })
-        );
+          const userRef = database().ref('users/' + firebaseUser.uid);
+          const userOrders = database().ref('users/' + firebaseUser.uid + '/orders');
+          const ordersRef = database().ref('orders/' + data.orderUID);
 
-        Promise.all(promises).then((res) => {
-          unassignedOrdersRef.remove();
-          setIsValidatingAssign(false);
-        });
+          promises.push(
+            userRef.update({
+              "accountType": "User",
+            })
+          );
+          promises.push(
+            userOrders.push({
+              "orderUID": data.orderUID
+            })
+          );
+          promises.push(
+            ordersRef.update({
+              "userUID": firebaseUser.uid
+            })
+          );
 
+          Promise.all(promises).then((res) => {
+            unassignedOrdersRef.remove();
+            setIsValidatingAssign(false);
+          });
 
-        if (firebaseUser) {
-          const notificationsRef = database().ref('notifications/' + firebaseUser.uid).push();
+          setOrderAssigned(true);
+          if (firebaseUser) {
+            const notificationsRef = database().ref('notifications/' + firebaseUser.uid).push();
 
-          const today = new Date();
-          const time = today.getHours() + ':' + today.getMinutes();
-          const dateTime = time;
+            const today = new Date();
+            const time = today.getHours() + ':' + today.getMinutes();
+            const dateTime = time;
 
-          const notificationsData = {
-            "content": "Gratulacje, przypisałeś do swojego konta zlecenie.",
-            "time": dateTime,
-            "orderUID": data.orderUID,
-            "type": "NewOrder",
-            "read": "false",
+            const notificationsData = {
+              "content": "Gratulacje, przypisałeś do swojego konta zlecenie.",
+              "time": dateTime,
+              "orderUID": data.orderUID,
+              "type": "NewOrder",
+              "read": "false",
+            }
+            notificationsRef.set(notificationsData)
+              .catch(error => console.error(error));
           }
-          notificationsRef.set(notificationsData)
-            .catch(error => console.error(error));
-        }
-      } else {
-        errors.unassignedOrderUID = "Zlecenie o podanym numerze nie istnieje albo zostało już przypisane";
-        setIsValidatingAssign(false);
-      }
-    })
+        } else {
+          console.log("error daje info");
 
+          errors.unassignedOrderUID = "Zlecenie o podanym numerze nie istnieje albo zostało już przypisane";
+          setIsValidatingAssign(false);
+        }
+      })
+    }
   }
 
   const sendMail = () => {
@@ -109,27 +116,28 @@ const AssignOrder = () => {
     <React.Fragment>
       <Card>
         {firebaseUser.emailVerified ?
-          <form onSubmit={handleSubmit}>
-            {
-              isValidatingAssign ? <Spinner /> :
-                renderInputs.payLoad.map((res) => {
-                  if (res.type !== "submit")
-                    return <React.Fragment key={res.name}>
-                      <Input
-                        {...res}
-                        onChange={handleChange}
-                        value={values[res.name]}
-                        className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
-                      />
-                      {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
-                    </React.Fragment>
-                  else
-                    return <React.Fragment key={res.name}>
-                      <Input {...res} />
-                    </React.Fragment>
-                })
-            }
-          </form> :
+          orderAssigned ? <p>Przypisano poprawnie zlecenie</p> :
+            <form onSubmit={handleSubmit}>
+              {
+                isValidatingAssign ? <Spinner /> :
+                  renderInputs.payLoad.map((res) => {
+                    if (res.type !== "submit")
+                      return <React.Fragment key={res.name}>
+                        <Input
+                          {...res}
+                          onChange={handleChange}
+                          value={values[res.name]}
+                          className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
+                        />
+                        {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
+                      </React.Fragment>
+                    else
+                      return <React.Fragment key={res.name}>
+                        <Input {...res} />
+                      </React.Fragment>
+                  })
+              }
+            </form> :
           <React.Fragment>
             Wyślij email weryfikacyjny, aby aktywować konto.
             <Input type="button" className="btn btn--light" onClick={sendMail} value="Wyślij" />

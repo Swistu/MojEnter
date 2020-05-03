@@ -33,8 +33,6 @@ const ShowOrder = ({ history }) => {
       setOrderUID(history.location.state.orderUID);
   }, [history, orderUID])
 
-
-
   const statusTypeHandler = (status) => {
     switch (status) {
       case "new":
@@ -59,7 +57,7 @@ const ShowOrder = ({ history }) => {
           const data = snapshot.val();
           setCurrentOrder(data);
         } else console.error(snapshot);
-        
+
       })
 
       setLoadingHistory(true);
@@ -113,10 +111,8 @@ const ShowOrder = ({ history }) => {
     <React.Fragment>
       <Card>
         {currentOrder ? <React.Fragment>
-          {currentOrder.userUID !== undefined ? <React.Fragment>
-            <p style={{ float: "right", fontWeight: "Bold", marginBottom: "15px" }} onClick={() => history.push({ pathname: `/dashboard/messages`, state: { "orderUID": orderUID, "orderID": currentOrder.orderID, "userUID": currentOrder.userUID } })}>Napisz wiadomość</p>
-            <div style={{ clear: "both" }} />
-          </React.Fragment> : "Użytkownik nie przypiął zlecenia do swojego konta"}
+          <p style={{ float: "right", fontWeight: "Bold", marginBottom: "15px" }} onClick={() => history.push({ pathname: `/dashboard/wiadomosci`, state: { "orderUID": orderUID } })}>Napisz wiadomość</p>
+          <div style={{ clear: "both" }} />
           <div className="order__summary">
             <h2 className="card__title">Zlecenie: {currentOrder.orderID}</h2>
             <section className="info__box">

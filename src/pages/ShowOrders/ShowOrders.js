@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
 import { database } from 'firebase';
 
 import Card from '../../components/UI/Card/Card';
@@ -6,7 +7,10 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 import Input from '../../components/UI/Input/Input';
 
 const ShowOrders = ({ history }) => {
+  const { realtimeDatabaseUser } = useSelector(state => state.authenticationReducer);
+
   const [listOfOrders, setListOfOrders] = useState(null);
+
 
   useEffect(() => {
     database().ref("orders").on("value", (snapshot) => {
@@ -14,15 +18,39 @@ const ShowOrders = ({ history }) => {
         const data = snapshot.val();
         const listOfOrdersUID = Object.keys(data);
 
-        setListOfOrders(listOfOrdersUID.map((order, i) => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-          <td>{++i}</td>
-          <td>{data[order].orderID}</td>
-          <td>{data[order].client}</td>
-          <td>{data[order].telNumber}</td>
-          <td>{data[order].deviceName}</td>
-          <td>{data[order].cost}zł</td>
-          <td>{data[order].endDate}</td>
-        </tr>))
+
+        if (realtimeDatabaseUser.accountType !== "Admin") {
+          const userOrders = realtimeDatabaseUser.orders;
+          const keyOfUserOrders = Object.keys(userOrders);
+          let i = 1;
+          setListOfOrders(keyOfUserOrders.map(userOrdersUID => {
+            return listOfOrdersUID.map((order) => {
+              if (order === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
+                return <tr key={order} onClick={() => redirectToOrder(order)} className="link">
+                  <td>{i++}</td>
+                  <td>{data[order].orderID}</td>
+                  <td>{data[order].client}</td>
+                  <td>{data[order].telNumber}</td>
+                  <td>{data[order].deviceName}</td>
+                  <td>{data[order].cost}zł</td>
+                  <td>{data[order].endDate}</td>
+                </tr>
+              else
+                return null
+            })
+          }))
+        } else {
+          setListOfOrders(listOfOrdersUID.map((order, i) => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
+            <td>{++i}</td>
+            <td>{data[order].orderID}</td>
+            <td>{data[order].client}</td>
+            <td>{data[order].telNumber}</td>
+            <td>{data[order].deviceName}</td>
+            <td>{data[order].cost}zł</td>
+            <td>{data[order].endDate}</td>
+          </tr>
+          ))
+        }
       } else {
         console.error("Brak danych pod danym endpoint'em");
         setListOfOrders(<React.Fragment><tr></tr><h2>Brak danych</h2></React.Fragment>)
@@ -32,7 +60,7 @@ const ShowOrders = ({ history }) => {
     const redirectToOrder = (order) => {
       history.push({ pathname: `/dashboard/zlecenie`, state: { "orderUID": order } });
     }
-  }, [history])
+  }, [history, realtimeDatabaseUser])
 
   return (
     <React.Fragment>

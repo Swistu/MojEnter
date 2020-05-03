@@ -92,9 +92,6 @@ const Header = () => {
 				}
 			})
 		}
-
-		console.log(window.outerWidth);
-
 		// eslint-disable-next-line
 	}, [])
 
@@ -112,15 +109,14 @@ const Header = () => {
 		dispatch(authentication(null, null));
 		auth().signOut();
 	}
+
 	return (
 		<header className="main__header">
-			<div className={`main__menu ${toggleSupportMenu ? "hide-shadow" : ""}`}>
-				<div className="navigation__toggler" onClick={toggleMenuHandler}>
-					<div className="burger">
-						<span className="burger__line"></span>
-						<span className="burger__line"></span>
-						<span className="burger__line"></span>
-					</div>
+			<div className="main__menu">
+				<div className="burger">
+					<span className="burger__line"></span>
+					<span className="burger__line"></span>
+					<span className="burger__line"></span>
 				</div>
 				<div className="logo">
 					<a href="/dashboard">
@@ -130,32 +126,32 @@ const Header = () => {
 						</picture>
 					</a>
 				</div>
-				<div className="menu-more fas fa-ellipsis-h" onClick={toggleSupportMenuHandler}></div>
-			</div>
-			<nav className={`main__navigation ${toggleMenu ? "active" : ""}`}>
-				<ul>
-					{routes}
-				</ul>
-			</nav>
-			<div className={`support__menu ${ toggleSupportMenu ? "show" : "hideSubmenu"}`}>
-				<ul className="support__menu-options" >
-					<li className="nav__icon" >
-						<i className="fas fa-bell"></i>
-						<div id="notifications__number" className="rounded-circle">{numberOfNotifications}</div>
-						<ul className="support__menu-submenu" >
-							<Notifications toggleSupportMenuHandler={toggleSupportMenuHandler} />
-						</ul>
-					</li>
-					<li className="nav__icon" >
-						<i className="fas fa-user-circle" ></i>
-						Witaj, {realtimeDatabaseUser.name}
-						<ul className="support__menu-submenu" id="menu__account" >
-							<NavItem type="link" name="Konto" to="/dashboard/konto" icon="user-cog" highlightLink={false} onClick={toggleSupportMenuHandler} />
-							<NavItem type="divider" />
-							<NavItem type="link" name="Wyloguj się" to="/" icon="power-off" onClick={() => { logOut() }} />
-						</ul>
-					</li>
-				</ul>
+				<div className="menu-more fas fa-ellipsis-h"></div>
+				<div className="support__menu">
+					<ul className="support__menu-options" >
+						<li className="nav__icon" >
+							<i className="fas fa-bell"></i>
+							<div id="notifications__number" className="rounded-circle">{numberOfNotifications}</div>
+							<ul className="support__menu-submenu" >
+								<Notifications />
+							</ul>
+						</li>
+						<li className="nav__icon" id="menu__account">
+							{firebaseUser.photoURL !== null ? <img className="rounded-circle userImage" src={`${firebaseUser.photoURL}`} alt="" /> : <i className="fas fa-user-circle userImage" style={{ color: "#7c8798" }}></i>}
+							<div className="greeting"><span className="text-light">Witaj,</span><span className="userName">{realtimeDatabaseUser.name}</span> <i className="fas fa-chevron-down text-light" style={{ fontSize: 15 }}></i></div>
+							<ul className="support__menu-submenu">
+								<NavItem type="link" name="Konto" to="/dashboard/konto" icon="user-cog" highlightLink={false} />
+								<NavItem type="divider" />
+								<NavItem type="link" name="Wyloguj się" to="/" icon="power-off" onClick={logOut} />
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<nav className="main__navigation">
+					<ul>
+						{routes}
+					</ul>
+				</nav>
 			</div>
 		</header>
 	)

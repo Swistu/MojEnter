@@ -21,11 +21,14 @@ const Messages = ({ history }) => {
       database().ref('orders/' + orderUID).once("value", (snapshot) => {
         if (snapshot && snapshot.val()) {
           const data = snapshot.val();
-          setReceiverUserUID(data.userUID);
+          if (data.userUID)
+            setReceiverUserUID(data.userUID);
+          else
+            setReceiverUserUID(null);
         }
       });
     } else setReceiverUserUID("Admin");
-  }, [receiverUserUID, orderUID, realtimeDatabaseUser])
+  }, [orderUID, realtimeDatabaseUser])
 
   useEffect(() => {
     database().ref('latestMessage/').on("value", (snapshot) => {
@@ -33,25 +36,52 @@ const Messages = ({ history }) => {
         const data = snapshot.val();
         const keyOfAllOrders = Object.keys(data);
 
-        setContactItem(keyOfAllOrders.map((orderMessageUID, i) => <div className="message__item" key={orderMessageUID} onClick={() => { setOrderUID(orderMessageUID); }}>
-          <div className="message__image">
-            <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
-          </div>
-          <div className="message__item__details">
-            <div className="message__sender">
-              {data[orderMessageUID].Author}
-            </div>
-            <div className="message__orderdID">
-              {data[orderMessageUID].orderID}
-            </div>
-            <div className="message__time">
-              <time>{data[orderMessageUID].Message.substr(0, 20)}{data[orderMessageUID].Message.length > 19 ? "..." : ""}</time>
-            </div>
-          </div>
-        </div>
-        ));
 
-
+        if (realtimeDatabaseUser.accountType !== "Admin") {
+          const userOrders = realtimeDatabaseUser.orders;
+          const keyOfUserOrders = Object.keys(userOrders);
+          setContactItem(keyOfUserOrders.map(userOrdersUID =>
+            keyOfAllOrders.map(orderMessageUID => {
+              if (orderMessageUID === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
+                return <div className="message__item" key={orderMessageUID} onClick={() => { setOrderUID(orderMessageUID); }}>
+                  <div className="message__image">
+                    <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
+                  </div>
+                  <div className="message__item__details">
+                    <div className="message__sender">
+                      {data[orderMessageUID].Author}
+                    </div>
+                    <div className="message__orderdID">
+                      {data[orderMessageUID].orderID}
+                    </div>
+                    <div className="message__time">
+                      <time>{data[orderMessageUID].Message.substr(0, 20)}{data[orderMessageUID].Message.length > 19 ? "..." : ""}</time>
+                    </div>
+                  </div>
+                </div>
+              else
+                return null
+            })
+          ));
+        } else {
+          setContactItem(keyOfAllOrders.map(orderMessageUID => <div className="message__item" key={orderMessageUID} onClick={() => { setOrderUID(orderMessageUID); }}>
+            <div className="message__image">
+              <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
+            </div>
+            <div className="message__item__details">
+              <div className="message__sender">
+                {data[orderMessageUID].Author}
+              </div>
+              <div className="message__orderdID">
+                {data[orderMessageUID].orderID}
+              </div>
+              <div className="message__time">
+                <time>{data[orderMessageUID].Message.substr(0, 20)}{data[orderMessageUID].Message.length > 19 ? "..." : ""}</time>
+              </div>
+            </div>
+          </div>
+          ));
+        }
       } else {
         setContactItem(<p style={{ textAlign: "center", padding: "20px" }} > Utwórz rozmowe, aby dodać ją do listy</p >)
       }
@@ -98,14 +128,13 @@ const Messages = ({ history }) => {
               </div>
             )
           }
-
         }))
       }
     })
   }, [orderUID, firebaseUser])
 
   const addMessage = () => {
-    if (orderUID !== null && newMessage !== "" && receiverUserUID !== null) {
+    if (orderUID !== null && newMessage !== "") {
       const ordersMessageRef = database().ref('ordersMessage/' + orderUID).push();
       const latestMessageRef = database().ref('latestMessage/' + orderUID);
       const today = new Date();
@@ -131,32 +160,33 @@ const Messages = ({ history }) => {
       latestMessageRef.set(latestMessageData)
         .catch(error => console.error(error));
 
-      if (realtimeDatabaseUser.accountType === "Admin") {
-        const notificationsRef = database().ref('notifications/' + receiverUserUID).push();
-        const notificationsData = {
-          "content": "Nowa wiadomość",
-          "orderUID": orderUID,
-          "time": dateTime,
-          "type": "Message",
-          "read": "false",
+      if (receiverUserUID !== null) {
+        if (realtimeDatabaseUser.accountType === "Admin") {
+          const notificationsRef = database().ref('notifications/' + receiverUserUID).push();
+          const notificationsData = {
+            "content": "Nowa wiadomość",
+            "orderUID": orderUID,
+            "time": dateTime,
+            "type": "Message",
+            "read": "false",
+          }
+          notificationsRef.set(notificationsData)
+            .catch(error => console.error(error));
+        } else {
+          const notificationsRef = database().ref('notifications/admin').push();
+          const notificationsData = {
+            "content": "Nowa wiadomość",
+            "orderUID": orderUID,
+            "time": dateTime,
+            "type": "Message",
+            "read": "false",
+          }
+          notificationsRef.set(notificationsData)
+            .catch(error => console.error(error));
         }
-        notificationsRef.set(notificationsData)
-          .catch(error => console.error(error));
-      } else {
-        const notificationsRef = database().ref('notifications/admin').push();
-        const notificationsData = {
-          "content": "Nowa wiadomość",
-          "orderUID": orderUID,
-          "time": dateTime,
-          "type": "Message",
-          "read": "false",
-        }
-        notificationsRef.set(notificationsData)
-          .catch(error => console.error(error));
       }
     }
   }
-
 
   return (
     <React.Fragment>
