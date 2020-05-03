@@ -12,7 +12,7 @@ const NavItem = ({ name, icon, className, type, toggleMenuHandler, highlightLink
       case "link":
         return (
           <li className="nav__item">
-            <NavLink exact={true} activeClassName={highlightLink ? "active" : ""} className={`nav__link ${className}`} {...props}><i className={`fas fa-${icon}`}>{children}</i><span className="nav__link__name">{name}</span></NavLink>
+            <NavLink exact={true} activeClassName={highlightLink ? "active" : ""} className={`nav__link ${className ? className : ""}`} {...props}><i className={`fas fa-${icon}`}>{children}</i><span className="nav__link__name">{name}</span></NavLink>
           </li>
         );
       case "icon":

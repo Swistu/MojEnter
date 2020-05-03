@@ -36,7 +36,6 @@ const Messages = ({ history }) => {
         const data = snapshot.val();
         const keyOfAllOrders = Object.keys(data);
 
-
         if (realtimeDatabaseUser.accountType !== "Admin") {
           const userOrders = realtimeDatabaseUser.orders;
           const keyOfUserOrders = Object.keys(userOrders);
@@ -191,23 +190,25 @@ const Messages = ({ history }) => {
   return (
     <React.Fragment>
       <Card style={{ paddingBottom: "0" }}>
-        <h2>Wiadomości</h2>
         <div className="messages__box">
           <div className="contact__box">
             {contactItem}
           </div>
           <div className="chat__box">
             {orderMessages}
-            <div className="createNewMessage">
-              <Input type="text" placeholder="Napisz wiadomość" id="newMessage" value={newMessage} onChange={(e) => { setNewMessage(e.target.value) }} />
-              <div id="sendMessage" onClick={addMessage}>
-                <i className="fas fa-paper-plane"></i>
-              </div>
-            </div>
+            {
+              orderUID !== null ?
+                <div className="createNewMessage">
+                  <Input type="text" placeholder="Napisz wiadomość" id="newMessage" value={newMessage} onChange={(event) => { setNewMessage(event.target.value) }} />
+                  <div id="sendMessage" onClick={addMessage}>
+                    <i className="fas fa-paper-plane"></i>
+                  </div>
+                </div> : null
+            }
           </div>
         </div>
       </Card>
-    </React.Fragment >
+    </React.Fragment>
   )
 }
 

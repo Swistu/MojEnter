@@ -12,6 +12,7 @@ import ShowOrders from '../../pages/ShowOrders/ShowOrders';
 import UserConfig from '../../pages/UserConfig/UserConfig'
 import Messages from '../../pages/Messages/Messages'
 import NotFound from '../../pages/NotFound/NotFound';
+import Notifications from '../../pages/Notifications/Notifications';
 
 const Dashboard = ({ history }) => {
 	const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
@@ -56,6 +57,7 @@ const Dashboard = ({ history }) => {
 			<Switch>
 				<Route exact path="/dashboard/" component={Home} />
 				<Route exact path="/dashboard/konto" component={UserConfig} />
+				<Route exact path="/dashboard/powiadomienia" component={Notifications} />
 				{routes}
 				<Route component={NotFound} />
 			</Switch>

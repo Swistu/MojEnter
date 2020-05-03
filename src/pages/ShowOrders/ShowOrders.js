@@ -6,18 +6,18 @@ import Card from '../../components/UI/Card/Card';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import Input from '../../components/UI/Input/Input';
 
+import './ShowOrders.css';
+
 const ShowOrders = ({ history }) => {
   const { realtimeDatabaseUser } = useSelector(state => state.authenticationReducer);
 
   const [listOfOrders, setListOfOrders] = useState(null);
-
 
   useEffect(() => {
     database().ref("orders").on("value", (snapshot) => {
       if (snapshot && snapshot.val()) {
         const data = snapshot.val();
         const listOfOrdersUID = Object.keys(data);
-
 
         if (realtimeDatabaseUser.accountType !== "Admin") {
           const userOrders = realtimeDatabaseUser.orders;
@@ -27,13 +27,13 @@ const ShowOrders = ({ history }) => {
             return listOfOrdersUID.map((order) => {
               if (order === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
                 return <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-                  <td>{i++}</td>
-                  <td>{data[order].orderID}</td>
-                  <td>{data[order].client}</td>
-                  <td>{data[order].telNumber}</td>
-                  <td>{data[order].deviceName}</td>
-                  <td>{data[order].cost}zł</td>
-                  <td>{data[order].endDate}</td>
+                  <td label="ID">{i++}</td>
+                  <td label="Zlecenie">{data[order].orderID}</td>
+                  <td label="Klient">{data[order].client}</td>
+                  <td label="Telefon">{data[order].telNumber}</td>
+                  <td label="Urządzenie">{data[order].deviceName}</td>
+                  <td label="Koszt">{data[order].cost}zł</td>
+                  <td label="Termin zakończenia">{data[order].endDate}</td>
                 </tr>
               else
                 return null
@@ -41,18 +41,17 @@ const ShowOrders = ({ history }) => {
           }))
         } else {
           setListOfOrders(listOfOrdersUID.map((order, i) => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-            <td>{++i}</td>
-            <td>{data[order].orderID}</td>
-            <td>{data[order].client}</td>
-            <td>{data[order].telNumber}</td>
-            <td>{data[order].deviceName}</td>
-            <td>{data[order].cost}zł</td>
-            <td>{data[order].endDate}</td>
+            <td label="ID">{++i}</td>
+            <td label="Zlecenie">{data[order].orderID}</td>
+            <td label="Klient">{data[order].client}</td>
+            <td label="Telefon">{data[order].telNumber}</td>
+            <td label="Urządzenie">{data[order].deviceName}</td>
+            <td label="Koszt">{data[order].cost}zł</td>
+            <td label="Termin zakończenia">{data[order].endDate}</td>
           </tr>
           ))
         }
       } else {
-        console.error("Brak danych pod danym endpoint'em");
         setListOfOrders(<React.Fragment><tr></tr><h2>Brak danych</h2></React.Fragment>)
       }
     })
@@ -68,12 +67,12 @@ const ShowOrders = ({ history }) => {
         <Input type="button" className="btn btn--light " value="Wszystkie Zlecenia" />
         <Input type="button" className="btn btn--warning " value="Zlecenia w trakcie" />
         <Input type="button" className="btn btn--success " value="Zrealizowane Zlecenia" />
-        {listOfOrders ? <div className="table-responsive">
-          <table className="table">
+        {listOfOrders ?
+          <table className="table table-responsive" id="allOrders">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Zlecenie nr.</th>
+                <th>Zlecenie</th>
                 <th>Klient</th>
                 <th>Telefon</th>
                 <th>Urządzenie</th>
@@ -85,7 +84,7 @@ const ShowOrders = ({ history }) => {
               {listOfOrders}
             </tbody>
           </table>
-        </div> : <Spinner />}
+          : <Spinner />}
       </Card>
     </React.Fragment>
   );

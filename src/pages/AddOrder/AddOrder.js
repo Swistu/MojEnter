@@ -179,7 +179,6 @@ const AddOrder = () => {
 	return (
 		<React.Fragment>
 			<Card>
-				<h1 className="card__title">Dodaj zlecenie</h1>
 				<form onSubmit={handleSubmit}>
 					{
 						renderInputs.payLoad.map((res) => {

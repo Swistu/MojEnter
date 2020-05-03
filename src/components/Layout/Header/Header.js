@@ -12,9 +12,7 @@ const Header = () => {
 	const dispatch = useDispatch();
 	const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
 
-	const [toggleMenu, setToggleMenu] = useState(false);
-	const [toggleSupportMenu, setToggleSupportMenu] = useState(false);
-	const [routes, setRoutes] = useState();
+	const [routes, setRoutes] = useState(null);
 	const [numberOfNotifications, setNumberOfNotifications] = useState(0);
 
 	useEffect(() => {
@@ -23,37 +21,37 @@ const Header = () => {
 				case "Annomyous":
 					setRoutes(
 						<React.Fragment>
-							<NavItem type="link" name="Dashboard" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
-							<NavItem type="divider" onClick={toggleMenuHandler} />
-							<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/przypisz-zlecenie" icon="file-download" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
+							<NavItem type="link" name="Dashboard" to="/dashboard" icon="home" />
+							<NavItem type="divider" />
+							<NavItem type="group" name="Aplikacja" />
+							<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/przypisz-zlecenie" icon="file-download" />
+							<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={logOut} />
 						</React.Fragment>
 					)
 					break;
 				case "User":
 					setRoutes(
 						<React.Fragment>
-							<NavItem type="link" name="Dashboard" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
-							<NavItem type="divider" onClick={toggleMenuHandler} />
-							<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/przypisz-zlecenie" icon="file-download" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Zlecenia" to="/dashboard/zlecenia" icon="file-alt" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Wiadomości" to="/dashboard/wiadomosci" icon="comments" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
+							<NavItem type="link" name="Dashboard" to="/dashboard" icon="home" />
+							<NavItem type="divider" />
+							<NavItem type="group" name="Aplikacja" />
+							<NavItem type="link" name="Przypisz zlecenie" to="/dashboard/przypisz-zlecenie" icon="file-download" />
+							<NavItem type="link" name="Zlecenia" to="/dashboard/zlecenia" icon="file-alt" />
+							<NavItem type="link" name="Wiadomości" to="/dashboard/wiadomosci" icon="comments" />
+							<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={logOut} />
 						</React.Fragment>
 					)
 					break;
 				case "Admin":
 					setRoutes(
 						<React.Fragment>
-							<NavItem type="link" name="Dashboard" to="/dashboard" icon="home" onClick={toggleMenuHandler} />
-							<NavItem type="divider" onClick={toggleMenuHandler} />
-							<NavItem type="group" name="Aplikacja" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/dodaj-zlecenie" icon="plus-circle" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Zlecenia" to="/dashboard/zlecenia" icon="file-alt" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Wiadomości" to="/dashboard/wiadomosci" icon="comments" onClick={toggleMenuHandler} />
-							<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={() => { toggleMenuHandler(); logOut() }} />
+							<NavItem type="link" name="Dashboard" to="/dashboard" icon="home" />
+							<NavItem type="divider" />
+							<NavItem type="group" name="Aplikacja" />
+							<NavItem type="link" name="Dodaj zlecenie" to="/dashboard/dodaj-zlecenie" icon="plus-circle" />
+							<NavItem type="link" name="Zlecenia" to="/dashboard/zlecenia" icon="file-alt" />
+							<NavItem type="link" name="Wiadomości" to="/dashboard/wiadomosci" icon="comments" />
+							<NavItem type="link" name="Wyloguj się" to="/" icon="sign-out-alt" onClick={logOut} />
 						</React.Fragment>
 					)
 					break;
@@ -95,16 +93,6 @@ const Header = () => {
 		// eslint-disable-next-line
 	}, [])
 
-
-
-	const toggleMenuHandler = () => {
-		setToggleMenu(toggleMenu => !toggleMenu);
-		setToggleSupportMenu(false);
-	}
-	const toggleSupportMenuHandler = () => {
-		setToggleSupportMenu(toggleSupportMenu => !toggleSupportMenu);
-		setToggleMenu(false);
-	}
 	const logOut = () => {
 		dispatch(authentication(null, null));
 		auth().signOut();
@@ -140,7 +128,7 @@ const Header = () => {
 							{firebaseUser.photoURL !== null ? <img className="rounded-circle userImage" src={`${firebaseUser.photoURL}`} alt="" /> : <i className="fas fa-user-circle userImage" style={{ color: "#7c8798" }}></i>}
 							<div className="greeting"><span className="text-light">Witaj,</span><span className="userName">{realtimeDatabaseUser.name}</span> <i className="fas fa-chevron-down text-light" style={{ fontSize: 15 }}></i></div>
 							<ul className="support__menu-submenu">
-								<NavItem type="link" name="Konto" to="/dashboard/konto" icon="user-cog" highlightLink={false} />
+								<NavItem type="link" name="Konto" to="/dashboard/konto" icon="user-cog" />
 								<NavItem type="divider" />
 								<NavItem type="link" name="Wyloguj się" to="/" icon="power-off" onClick={logOut} />
 							</ul>

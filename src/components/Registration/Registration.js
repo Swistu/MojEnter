@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { auth, database } from 'firebase';
 
-import Input from '../UI/Input/Input';
 import useForm from '../../hooks/useForm/useForm';
+import Input from '../UI/Input/Input';
 import Spinner from '../UI/Spinner/Spinner';
 
 const Registration = ({ showRegisterHandler, ...props }) => {
-  let itemsToCheck;
-  const [registrationInProgress, setRegistrationInProgress] = useState();
+  const [registrationInProgress, setRegistrationInProgress] = useState(false);
 
   const renderInputs = {
     payLoad: [
@@ -37,13 +36,15 @@ const Registration = ({ showRegisterHandler, ...props }) => {
       },
     ]
   };
-  renderInputs.payLoad.map(res => {
-    itemsToCheck = {
-      ...itemsToCheck,
-      [res.name]: res.value ? res.value : ""
-    }
-    return null;
-  });
+
+  const itemsToCheck = () => {
+    return renderInputs.payLoad.reduce((previousValue, currentValue, i) => {
+      if (i === 1)
+        return { [previousValue.name]: previousValue.value ? previousValue.value : "", [currentValue.name]: currentValue.value ? currentValue.value : "" }
+      else
+        return { ...previousValue, [currentValue.name]: currentValue.value ? currentValue.value : "" }
+    });
+  }
 
   const signUp = () => {
     setRegistrationInProgress(true);
@@ -65,19 +66,14 @@ const Registration = ({ showRegisterHandler, ...props }) => {
           errors.emailFB = "Konto z podanym email już istnieje";
         }
         setRegistrationInProgress(false);
-      }
-      );
+      });
   }
 
   const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(signUp, itemsToCheck);
-
-
   return (
-    registrationInProgress ? <Spinner /> : <React.Fragment>
+    registrationInProgress ? <Spinner style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }} /> : <React.Fragment>
       <h2 className="auth__header">Zarejestruj się</h2>
       <form onSubmit={handleSubmit}>
-
-        {/* {(errors.passwordFB2 === "" || errors.passwordFB === "") && <p className={"feedback feedback--invalid"} style={{ marginTop: "20px" }}>Podane hasła nie są identyczne</p>} */}
         {renderInputs.payLoad.map((res) => {
           if (res.type !== "submit")
             return <React.Fragment key={res.name}>

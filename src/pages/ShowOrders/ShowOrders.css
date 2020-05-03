@@ -1,0 +1,25 @@
+@media screen and (max-width: 1170px){
+  table#allOrders thead{
+    display: none;
+  }
+  table#allOrders tbody{
+    width: 100%;
+  }
+  table#allOrders tr{
+    width: 100%;
+    display: block;
+    margin-bottom: 6px;
+  }
+  table#allOrders{
+    display: flex;
+  }
+  table#allOrders td{
+    display: flex;
+    box-sizing: border-box;
+  }
+  table#allOrders td::before{
+    content: attr(label)":";
+    margin-right: 5px;
+    width: 50%;
+  }
+}

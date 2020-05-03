@@ -88,7 +88,7 @@ const AssignOrder = () => {
             const dateTime = time;
 
             const notificationsData = {
-              "content": "Gratulacje, przypisałeś do swojego konta zlecenie.",
+              "content": "Przypisałeś zlecenie do swojego konta.",
               "time": dateTime,
               "orderUID": data.orderUID,
               "type": "NewOrder",

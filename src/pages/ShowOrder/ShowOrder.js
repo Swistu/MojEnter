@@ -205,7 +205,6 @@ const ShowOrder = ({ history }) => {
           <p>Email: handel@enter.pl</p>
         </section>
       </Card>
-
     </React.Fragment>
   );
 }

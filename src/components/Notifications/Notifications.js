@@ -4,9 +4,13 @@ import { Observable } from 'rxjs';
 import { database } from 'firebase';
 import { useHistory } from 'react-router'
 
-import './Notifications.css';
+import MessageBox from '../MessageBox/MessageBox';
+import MessageItem from '../MessageBox/MessageItem/MessageItem';
 
-const Notifications = ({ toggleSupportMenuHandler }) => {
+import './Notifications.css';
+import NavItem from '../NavItem/NavItem';
+
+const Notifications = () => {
   const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
 
   const [notificationList, setNotificationList] = useState(null)
@@ -38,41 +42,37 @@ const Notifications = ({ toggleSupportMenuHandler }) => {
         case "NewOrder":
           setNotificationList(old => <React.Fragment>
             {old}
-            <div className="message__item" key={notification} onClick={() => { readNotifications(notification.key);  history.push({ pathname: `/dashboard/zlecenie`, state: { "orderUID": notification.orderUID } }) }}>
-              <div className="message__image">
-                <div className="rounded-circle notification__image">
-                  <i className="fas fa-file-download"></i>
-                </div>
-              </div>
-              <div className="message__item__details">
-                <div className="message__sender">
-                  {notification.content}
-                </div>
-                <div className="message__time">
-                  <time>{notification.time}</time>
-                </div>
-              </div>
-            </div>
+            <MessageItem
+              className={notification.read === "false" ? "unread" : ""}
+              label={notification.type}
+              title="Nowe zlecenie"
+              descriptionFirst="Przypisano zlecenie do Twojego konta."
+              descriptionSecond={notification.time}
+              icon="fas fa-file-download"
+              key={notification}
+              onClick={() => {
+                readNotifications(notification.key);
+                history.push({ pathname: `/dashboard/zlecenie`, state: { "orderUID": notification.orderUID } })
+              }}
+            />
           </React.Fragment>);
           break;
         case "Message":
           setNotificationList(old => <React.Fragment>
             {old}
-            <div className="message__item" key={notification} onClick={() => { readNotifications(notification.key);  history.push({ pathname: `/dashboard/wiadomosci`, state: { "orderUID": notification.orderUID } }) }}>
-              <div className="message__image">
-                <div className="rounded-circle notification__image">
-                  <i className="fas fa-comment-dots"></i>
-                </div>
-              </div>
-              <div className="message__item__details">
-                <div className="message__sender">
-                  {notification.content}
-                </div>
-                <div className="message__time">
-                  <time>{notification.time}</time>
-                </div>
-              </div>
-            </div>
+            <MessageItem
+              className={notification.read === "false" ? "unread" : ""}
+              label={notification.type}
+              title="Nowa wiadomość"
+              descriptionFirst="Otrzymano nową wiadomość."
+              descriptionSecond={notification.time}
+              icon="fas fa-comment-dots"
+              key={notification}
+              onClick={() => {
+                readNotifications(notification.key);
+                history.push({ pathname: `/dashboard/wiadomosci`, state: { "orderUID": notification.orderUID } })
+              }}
+            />
           </React.Fragment>);
           break;
         default:
@@ -90,12 +90,19 @@ const Notifications = ({ toggleSupportMenuHandler }) => {
   }
 
   return (
-    <div className="notifications" id="notifications">
-
-      {notificationList !== null ? <React.Fragment>
-        <div className="readMore">Sprwadz wszystkie <i className="fa fa-angle-right" style={{ marginLeft: "6px" }}></i></div>
-        {notificationList}
-      </React.Fragment> : <div className="readMore">Brak powiadomień</div>}
+    <div id="notifications__submmenu" className="notifications__list">
+      {
+        notificationList !== null ?
+          <React.Fragment>
+            <NavItem type="redirect" to={"/dashboard/powiadomienia"}>
+              <div className="readMore">Sprwadz wszystkie <i className="fa fa-angle-right" style={{ marginLeft: "6px" }}></i></div>
+            </NavItem>
+            <MessageBox style={{ display: "flex", flexDirection: "column-reverse" }}>
+              {notificationList}
+            </MessageBox>
+          </React.Fragment> :
+          <div className="readMore">Brak powiadomień</div>
+      }
     </div>
   );
 }
