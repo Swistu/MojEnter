@@ -107,7 +107,10 @@
   width: 100%;
   padding: 0 26px;
 }
-.support__menu-options li:hover .support__menu-submenu{
+.support__menu-options li:hover{
+  cursor: pointer;
+}
+.support__menu-options li.active .support__menu-submenu{
   display: flex;
 }
 .support__menu-options > li{
@@ -286,7 +289,8 @@
     left: -5px;
     box-shadow:rgba(0,0,0,.1) 1px 1px 15px ;
   }
-  #menu__account:hover .greeting *{
+  #menu__account:hover .greeting *,
+  #menu__account.active .greeting *{
     color: var(--dark);
   }
   #menu__account .userName{

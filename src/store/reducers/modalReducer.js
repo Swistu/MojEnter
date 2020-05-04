@@ -3,19 +3,17 @@ import * as actionTypes from '../actionTypes';
 const modalReducer = (state = false, action) => {
   switch (action.type) {
     case actionTypes.SHOW:
-      state = {
+      return {
         ...state,
         showModal: true,
         title: action.payLoad.title,
         component: action.payLoad.component
       }
-      return state;
     case actionTypes.HIDE:
-      state = {
+      return {
         ...state,
         showModal: false
       }
-      return state;
     default:
       return state;
   }

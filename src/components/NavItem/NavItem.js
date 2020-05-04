@@ -7,7 +7,6 @@ const NavItem = ({ name, icon, className, type, toggleMenuHandler, highlightLink
     if (highlightLink === undefined) {
       highlightLink = true;
     }
-
     switch (type) {
       case "link":
         return (
@@ -32,7 +31,6 @@ const NavItem = ({ name, icon, className, type, toggleMenuHandler, highlightLink
         return (
           <li className="nav__icon-link">
             <NavLink exact={true} {...props}><i className={`fas fa-${icon}`}></i>{children}</NavLink>
-
           </li>
         );
       case "divider":

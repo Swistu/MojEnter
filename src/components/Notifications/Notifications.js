@@ -6,15 +6,16 @@ import { useHistory } from 'react-router'
 
 import MessageBox from '../MessageBox/MessageBox';
 import MessageItem from '../MessageBox/MessageItem/MessageItem';
-
-import './Notifications.css';
 import NavItem from '../NavItem/NavItem';
 
+import './Notifications.css';
+
 const Notifications = () => {
+  const history = useHistory();
+  
   const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
 
   const [notificationList, setNotificationList] = useState(null)
-  const history = useHistory();
 
   useEffect(() => {
     const notificationsData$ = Observable.create(observer => {
