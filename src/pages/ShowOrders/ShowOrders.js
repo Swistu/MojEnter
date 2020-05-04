@@ -27,13 +27,13 @@ const ShowOrders = ({ history }) => {
             return listOfOrdersUID.map((order) => {
               if (order === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
                 return <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-                  <td label="ID">{i++}</td>
-                  <td label="Zlecenie">{data[order].orderID}</td>
-                  <td label="Klient">{data[order].client}</td>
-                  <td label="Telefon">{data[order].telNumber}</td>
-                  <td label="Urządzenie">{data[order].deviceName}</td>
-                  <td label="Koszt">{data[order].cost}zł</td>
-                  <td label="Termin zakończenia">{data[order].endDate}</td>
+                  <td label="ID"><span>{i++}</span></td>
+                  <td label="Zlecenie"><span>{data[order].orderID}</span></td>
+                  <td label="Klient"><span>{data[order].client} serklmgs selrkgmslekr  gsergsergsergsergserg sergserg</span></td>
+                  <td label="Telefon"><span>{data[order].telNumber}</span></td>
+                  <td label="Urządzenie"><span>{data[order].deviceName}</span></td>
+                  <td label="Koszt"><span>{data[order].cost}zł</span></td>
+                  <td label="Termin zakończenia"><span>{data[order].endDate}</span></td>
                 </tr>
               else
                 return null
@@ -41,13 +41,13 @@ const ShowOrders = ({ history }) => {
           }))
         } else {
           setListOfOrders(listOfOrdersUID.map((order, i) => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-            <td label="ID">{++i}</td>
-            <td label="Zlecenie">{data[order].orderID}</td>
-            <td label="Klient">{data[order].client}</td>
-            <td label="Telefon">{data[order].telNumber}</td>
-            <td label="Urządzenie">{data[order].deviceName}</td>
-            <td label="Koszt">{data[order].cost}zł</td>
-            <td label="Termin zakończenia">{data[order].endDate}</td>
+            <td label="ID"><span>{++i}</span></td>
+            <td label="Zlecenie"><span>{data[order].orderID}</span></td>
+            <td label="Klient"><span>{data[order].client}</span></td>
+            <td label="Telefon"><span>{data[order].telNumber}</span></td>
+            <td label="Urządzenie"><span>{data[order].deviceName}</span></td>
+            <td label="Koszt"><span>{data[order].cost}zł</span></td>
+            <td label="Termin zakończenia"><span>{data[order].endDate}</span></td>
           </tr>
           ))
         }

@@ -62,10 +62,8 @@ const Login = ({ history }) => {
 			.catch(() => {
 				errors.emailFB = "";
 				errors.passwordFB = "";
-			})
-			.finally(() => {
 				setIsLogging(false)
-			});
+			})
 	}
 
 	const signInGoogle = () => {
@@ -90,7 +88,7 @@ const Login = ({ history }) => {
 					})
 				}
 			})
-			.finally(() => {
+			.catch(() => {
 				setIsLogging(false)
 			});
 	}

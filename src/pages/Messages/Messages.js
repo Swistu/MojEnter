@@ -6,6 +6,8 @@ import Card from '../../components/UI/Card/Card'
 import Input from '../../components/UI/Input/Input';
 
 import './Messages.css';
+import MessageBox from '../../components/MessageBox/MessageBox';
+import MessageItem from '../../components/MessageBox/MessageItem/MessageItem';
 
 const Messages = ({ history }) => {
   const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
@@ -42,47 +44,31 @@ const Messages = ({ history }) => {
           setContactItem(keyOfUserOrders.map(userOrdersUID =>
             keyOfAllOrders.map(orderMessageUID => {
               if (orderMessageUID === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
-                return <div className="message__item" key={orderMessageUID} onClick={() => { setOrderUID(orderMessageUID); }}>
-                  <div className="message__image">
-                    <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
-                  </div>
-                  <div className="message__item__details">
-                    <div className="message__sender">
-                      {data[orderMessageUID].Author}
-                    </div>
-                    <div className="message__orderdID">
-                      {data[orderMessageUID].orderID}
-                    </div>
-                    <div className="message__time">
-                      <time>{data[orderMessageUID].Message.substr(0, 20)}{data[orderMessageUID].Message.length > 19 ? "..." : ""}</time>
-                    </div>
-                  </div>
-                </div>
+                return <MessageItem
+                  key={orderMessageUID}
+                  title={data[orderMessageUID].author}
+                  descriptionFirst={data[orderMessageUID].orderID}
+                  descriptionSecond={data[orderMessageUID].message.substr(0, 20)}
+                  imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
+                  onClick={() => { setOrderUID(orderMessageUID); }}
+                />
               else
                 return null
             })
           ));
         } else {
-          setContactItem(keyOfAllOrders.map(orderMessageUID => <div className="message__item" key={orderMessageUID} onClick={() => { setOrderUID(orderMessageUID); }}>
-            <div className="message__image">
-              <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
-            </div>
-            <div className="message__item__details">
-              <div className="message__sender">
-                {data[orderMessageUID].Author}
-              </div>
-              <div className="message__orderdID">
-                {data[orderMessageUID].orderID}
-              </div>
-              <div className="message__time">
-                <time>{data[orderMessageUID].Message.substr(0, 20)}{data[orderMessageUID].Message.length > 19 ? "..." : ""}</time>
-              </div>
-            </div>
-          </div>
+          setContactItem(keyOfAllOrders.map(orderMessageUID => <MessageItem
+            key={orderMessageUID}
+            title={data[orderMessageUID].author}
+            descriptionFirst={data[orderMessageUID].orderID}
+            descriptionSecond={data[orderMessageUID].message.substr(0, 20)}
+            imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
+            onClick={() => { setOrderUID(orderMessageUID); }}
+          />
           ));
         }
       } else {
-        setContactItem(<p style={{ textAlign: "center", padding: "20px" }} > Utwórz rozmowe, aby dodać ją do listy</p >)
+        setContactItem(<p style={{ textAlign: "center", padding: "20px" }}>Utwórz rozmowe, aby dodać ją do listy</p>)
       }
     })
   }, [realtimeDatabaseUser])
@@ -93,41 +79,15 @@ const Messages = ({ history }) => {
         const data = snapshot.val();
         const keyOfMessages = Object.keys(data);
 
-        setOrderMessages(keyOfMessages.map((messageUID, i) => {
-          if (firebaseUser.uid === data[messageUID].From) {
-            return (
-              <div className="message__item sender-me" key={messageUID}>
-                <div className="message__item__details">
-                  <div className="message__subject">
-                    {data[messageUID].Message}
-                  </div>
-                  <div className="message__time">
-                    <time>{data[messageUID].DateTime}</time>
-                  </div>
-                </div>
-              </div>
-            )
-          } else {
-            return (
-              <div className="message__item" key={messageUID}>
-                <div className="message__image">
-                  <img src="https://www.adminmart.com/src/assets/images/users/1.jpg" className="rounded-circle" alt="" />
-                </div>
-                <div className="message__item__details">
-                  <div className="message__sender">
-                    {data[messageUID].Author}
-                  </div>
-                  <div className="message__subject">
-                    {data[messageUID].Message}
-                  </div>
-                  <div className="message__time">
-                    <time>{data[messageUID].DateTime}</time>
-                  </div>
-                </div>
-              </div>
-            )
-          }
-        }))
+        setOrderMessages(keyOfMessages.map((messageUID, i) => <MessageItem
+          key={messageUID}
+          imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
+          title={firebaseUser.uid === data[messageUID].from ? undefined : data[messageUID].author}
+          className={firebaseUser.uid === data[messageUID].from ? "sender-me" : null}
+          descriptionFirst={data[messageUID].message}
+          descriptionSecond={data[messageUID].datetime}
+        />
+        ))
       }
     })
   }, [orderUID, firebaseUser])
@@ -140,17 +100,17 @@ const Messages = ({ history }) => {
       const time = today.getHours() + ':' + today.getMinutes();
       const dateTime = time;
       const ordersMessageData = {
-        "From": firebaseUser.uid,
-        "Author": realtimeDatabaseUser.name,
-        "DateTime": dateTime,
-        "Message": newMessage,
+        "from": firebaseUser.uid,
+        "author": realtimeDatabaseUser.name,
+        "datetime": dateTime,
+        "message": newMessage,
       };
       const latestMessageData = {
-        "From": firebaseUser.uid,
-        "Author": realtimeDatabaseUser.name,
+        "from": firebaseUser.uid,
+        "author": realtimeDatabaseUser.name,
         "orderUID": orderUID,
-        "DateTime": dateTime,
-        "Message": newMessage,
+        "dateTime": dateTime,
+        "message": newMessage,
       };
 
       ordersMessageRef.set(ordersMessageData)
@@ -192,14 +152,25 @@ const Messages = ({ history }) => {
       <Card style={{ paddingBottom: "0" }}>
         <div className="messages__box">
           <div className="contact__box">
-            {contactItem}
+            <MessageBox>
+              {contactItem}
+            </MessageBox>
           </div>
           <div className="chat__box">
-            {orderMessages}
+            <MessageBox>
+              {orderMessages}
+            </MessageBox>
             {
               orderUID !== null ?
                 <div className="createNewMessage">
-                  <Input type="text" placeholder="Napisz wiadomość" id="newMessage" value={newMessage} onChange={(event) => { setNewMessage(event.target.value) }} />
+                  <Input
+                    type="text"
+                    placeholder="Napisz wiadomość"
+                    id="newMessage"
+                    value={newMessage}
+                    onKeyPress={(event) => { if (event.key === "Enter") addMessage() }}
+                    onChange={(event) => { setNewMessage(event.target.value) }}
+                  />
                   <div id="sendMessage" onClick={addMessage}>
                     <i className="fas fa-paper-plane"></i>
                   </div>

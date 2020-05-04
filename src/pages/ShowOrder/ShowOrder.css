@@ -1,11 +1,9 @@
 .info__box p{
   margin: 0 0 5px 0;
 }
-
 .tabs__nav{
   list-style-type: none;
 }
-
 .tabs__item{
   padding: .8rem 1.6rem;
   width: auto;

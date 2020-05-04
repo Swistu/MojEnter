@@ -5,14 +5,11 @@
   padding: 10px 0 0;
   margin-left: -25px;
 }
-.messages__box .message__image img{
-  width: 40px;
-  height: 40px;
-}
-.message__item{
-  display: flex;
-  padding: 8px 16px;
-  line-height: 18px;
+.contact__box .message__box .message__image,
+.chat__box .message__box .message__image{
+  background-color: initial;
+  border-color: initial;
+  border: none;
 }
 .contact__box {
   border-top: 1px solid #edf2f9;
@@ -20,63 +17,56 @@
 .contact__box .message__item:nth-child(1n+2){
   border-top: 1px solid #edf2f9;
 }
-.message__item__details{
-  padding-left: 8px;
-}
-.message__image{
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-.message__image{
-  justify-content: center;
-  align-items: center;
-  display: flex;
-}
-.message__sender, .message__orderdID, .message__time, .message__subject{
-  width: 100%;
-}
-.message__sender{
+.contact__box .message__title{
   font-size: 14px;
-}
-.message__orderdID, .message__time{
-  font-size: 12px;
-  color: #9eabc0;
-}
-.message__subject{
-  padding: 8px;
-  background-color: #e4fbf8;
+  color: var(--primary);
 }
 .chat__box {
   padding: 20px 0 0;
   display: flex;
   flex-direction: column;
 }
-.chat__box .message__sender{
+.chat__box .message__item{
+  border-top: none;
+}
+.chat__box .message__title{
   margin-bottom: 8px;
   color: #7c8798;
   font-weight: 500;
+  font-size: 1.4rem;
 }
-.chat__box .message__time{
+.chat__box .message__description.firstItem{
+  padding: 8px;
+  background-color: #e4fbf8;
+  font-size: 1.6rem;
+}
+.chat__box .message__description.secondItem{
   margin-top: 8px;
-  font-size: 10px;
+  font-size: 1rem;
   line-height: 15px;
   color: #7c8798;
 }
-.chat__box .message__item__details {
-  padding-left: 16px;
-}
-.chat__box .message__item.sender-me .message__image, .chat__box .message__item.sender-me .message__sender{
- display: none;
+.chat__box .message__item:not(.sender-me) .message__item__details{
+  padding-left: 8px;
 }
 .chat__box .message__item.sender-me{
   justify-content: flex-end;
 }
-.chat__box .message__item.sender-me .message__time{
+.chat__box .message__item.sender-me .message__description.secondItem{
   text-align: right;
 }
-.chat__box .message__item.sender-me .message__subject{
+.chat__box .message__item.sender-me .message__description.firstItem{
   background-color: #eef5ff;
+  padding: 8px;
+  color: var(--primary);
+}
+.chat__box .message__item.sender-me .message__image, 
+.chat__box .message__item.sender-me .message__title{
+ display: none;
+}
+.chat__box .message__box .message__item:hover {
+  background-color: initial !important;
+  cursor: initial;
 }
 .createNewMessage{
   border-top: 1px solid #edf2f9;

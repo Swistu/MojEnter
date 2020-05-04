@@ -60,6 +60,7 @@ p:last-of-type{
 }
 table{
   margin: 15px 0;
+  font-size: 1.6rem;
   border-collapse: collapse;
 }
 th, td {
@@ -86,7 +87,6 @@ th{
   margin-bottom: 8px;
   text-align: left;
 }
-
 .btn{
   display: inline-block;
   color: #7c8798;
@@ -165,11 +165,6 @@ th{
 .feedback--valid{
   color: var(--succes);
 }
-
-table{
-  font-size: 1.6rem;
-}
-
 .page__title{
   font-size: 1.8rem;
   color: var(--dark);

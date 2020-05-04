@@ -6,8 +6,8 @@ const MessageItem = ({ title, className, descriptionFirst, descriptionSecond, im
   const [image, setImage] = useState(null);
 
   useEffect(() => {
-    if (imageURL !== undefined && icon !== undefined)
-      console.error("Tylko 1 typ zdjecia! (image/icon)");
+    if (imageURL === undefined && icon === undefined)
+      setImage(null)
     else if (imageURL !== undefined)
       setImage("imageURL")
     else
@@ -17,13 +17,16 @@ const MessageItem = ({ title, className, descriptionFirst, descriptionSecond, im
   return (
     <div className={`message__item ${className ? className : ""}`} {...props}>
       <div className="image__box">
-        <div className="message__image rounded-circle">
-          {
-            image === "imageURL" ?
-              <img src={imageURL} alt="" className="rounded-circle" /> :
-              <i className={icon}></i>
-          }
-        </div>
+        {
+          image !== null ?
+            <div className="message__image rounded-circle">
+              {
+                image === "imageURL" ?
+                  <img src={imageURL} alt="" className="rounded-circle" /> :
+                  <i className={icon}></i>
+              }
+            </div> : null
+        }
       </div>
       <div className="message__item__details">
         <div className="message__title">{title}</div>

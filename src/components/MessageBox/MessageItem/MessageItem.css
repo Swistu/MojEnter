@@ -30,7 +30,7 @@
   border: 1px solid transparent;
   border-color: #22ca80;
   transition: .15s background-color, .15s border-color;
-  
+  margin-right: 8px;
 }
 .message__box .message__image:hover{
   background-color: #1ca96b;
