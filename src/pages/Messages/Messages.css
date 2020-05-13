@@ -1,4 +1,4 @@
-.messages__box{
+.message__page{
   display: flex;
   flex-direction: column;
   width: calc(100% + 50px);
@@ -13,6 +13,8 @@
 }
 .contact__box {
   border-top: 1px solid #edf2f9;
+  height: auto;
+  max-height: 860px;
 }
 .contact__box .message__item:nth-child(1n+2){
   border-top: 1px solid #edf2f9;
@@ -22,16 +24,21 @@
   color: var(--primary);
 }
 .chat__box {
-  padding: 20px 0 0;
   display: flex;
   flex-direction: column;
+  max-height: 860px;
+  overflow: hidden;
+}
+.chat__box .message__box{
+  max-height: 767px;
+  overflow-y: scroll;
 }
 .chat__box .message__item{
   border-top: none;
 }
 .chat__box .message__title{
   margin-bottom: 8px;
-  color: #7c8798;
+  color: var(--primary);
   font-weight: 500;
   font-size: 1.4rem;
 }
@@ -39,12 +46,13 @@
   padding: 8px;
   background-color: #e4fbf8;
   font-size: 1.6rem;
+  color: var(--primary);
 }
 .chat__box .message__description.secondItem{
   margin-top: 8px;
   font-size: 1rem;
   line-height: 15px;
-  color: #7c8798;
+  color: var(--primary);
 }
 .chat__box .message__item:not(.sender-me) .message__item__details{
   padding-left: 8px;
@@ -98,15 +106,15 @@
   margin-right: 2px;
 }
 @media (min-width: 768px){
-  .messages__box{
+  .message__page{
     flex-direction: row;
   }
-  .messages__box .contact__box{
+  .message__page .contact__box{
     min-width: 210px;
     max-width: 250px;
     border-right: 1px solid #edf2f9;
   }
-  .messages__box .chat__box{
+  .message__page .chat__box{
     width: 100%;
     border-top: 1px solid #edf2f9;
   }

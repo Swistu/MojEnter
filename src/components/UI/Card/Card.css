@@ -5,23 +5,59 @@
   border: 0 solid #e9ecef;
   border-radius: .25rem;
   box-shadow: 0 3px 9px 0 rgba(169,184,200,.15);
+  width: 100%;
+  position: relative;
 }
 .card:first-of-type{
   margin-top: 15px;
 }
-
 .card__title{
   color: #212529;
   font-weight: 500;
   margin-bottom: 10px;
   font-size: 2rem;
 }
-
-.info__box{
+.card .info__box{
   margin: 5px 0 25px;
 }
-.info__title{
+.card .info__title{
   margin-bottom: 5px;
   font-weight: 700;
 }
-
+@media (min-width: 768px){
+  .card input[value="Anuluj"],
+  .card input[type="submit"]{
+    position: absolute;
+    margin: 0;
+    right: 25px;
+    bottom: 25px;
+  }
+}
+@media (min-width: 1200px){
+  .card.xl-50{
+    width: calc(50% - 15px);
+  }
+  .card.xl-50:nth-child(even){
+    margin-right: 15px;
+  }
+  .card.xl-50:nth-child(odd){
+    margin-left: 15px;
+  }
+} 
+@media (min-width: 1900px){
+  .card.xxl-33{
+    width: calc(33.33% - 15px);
+  }
+  .card.xxl-33:nth-child(3n + 1){
+    margin-right: 15px;
+    margin-left: 0;
+  }
+  .card.xxl-33:nth-child(3n + 2){
+    margin-right: 7.5px;
+    margin-left: 7.5px;
+  }
+  .card.xxl-33:nth-child(3n + 3){
+    margin-left: 15px;
+    margin-right: 0;
+  }
+} 

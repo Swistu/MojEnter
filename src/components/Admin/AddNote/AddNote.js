@@ -4,7 +4,6 @@ import Input from '../../UI/Input/Input';
 import { database } from 'firebase';
 
 const AddNote = ({ orderUID }) => {
-
   const [currentMemo, setCurrentMemo] = useState();
   const [content, setContent] = useState("");
 

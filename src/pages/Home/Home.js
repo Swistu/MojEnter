@@ -1,8 +1,9 @@
 import React from 'react';
 
-import Card from '../UI/Card/Card';
+import Card from '../../components/UI/Card/Card';
 
 const Home = () => {
+
   return (
     <React.Fragment>
       <Card>

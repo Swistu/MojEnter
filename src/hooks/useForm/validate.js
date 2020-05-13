@@ -15,7 +15,7 @@ const validate = (values) => {
         break;
       case "email":
         if (!values.email) {
-          errors.email = "Proszę podać adres email";
+          errors.email = "Pole wymagane";
         } else if (!/\S+@\S+\.\S+/.test(values.email)) {
           errors.email = "Zły adres email";
         }
@@ -57,13 +57,6 @@ const validate = (values) => {
           errors.passwordFB2 = "";
         } else if (values.passwordFB && values.passwordFB !== values.passwordFB2) {
           errors.passwordFB2 = "";
-        }
-        break;
-      case "emailFB":
-        if (!values.emailFB) {
-          errors.emailFB = "Proszę podać adres email";
-        } else if (!/\S+@\S+\.\S+/.test(values.emailFB)) {
-          errors.emailFB = "Zły adres email";
         }
         break;
       case "unassignedOrderUID":

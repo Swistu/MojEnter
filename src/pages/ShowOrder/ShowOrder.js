@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { database } from 'firebase';
-import { useDispatch, useSelector } from 'react-redux';
+import { database, auth } from 'firebase';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
+
+import { checkAccounType } from '../../utility/checkAccountType';
+import { getUserData } from '../../utility/getUserData';
 
 import { modal } from '../../store/actions';
 import { SHOW } from '../../store/actionTypes'
@@ -13,18 +17,27 @@ import Input from '../../components/UI/Input/Input';
 
 import './ShowOrder.css';
 
-const ShowOrder = ({ history }) => {
+const ShowOrder = () => {
+  const history = useHistory();
+
   const dispatch = useDispatch();
-  const { realtimeDatabaseUser } = useSelector(state => state.authenticationReducer)
 
   const [orderUID, setOrderUID] = useState(null);
   const [currentOrder, setCurrentOrder] = useState(null);
   const [orderMemo, setOrderMemo] = useState(null);
   const [historyList, setHistoryList] = useState(null);
   const [historyDescription, setHistoryDescription] = useState(null);
+  const [renderUpdateOrderButton, setRenderUpdateOrderButton] = useState(null);
+  const [renderMemo, setRenderMemo] = useState(null);
 
   const [lodaingMemo, setLoadingMemo] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  // eslint-disable-next-line
+  const [loadingOrder, setLoadingOrder] = useState(false);
+  const [accountType, setAccountType] = useState(null);
+  const [orderOwnerUID, setOrderOwnerUID] = useState(null);
+  const [userData, setUserData] = useState(null)
+
 
   useEffect(() => {
     if (!history.location.state)
@@ -51,13 +64,36 @@ const ShowOrder = ({ history }) => {
   }
 
   useEffect(() => {
-    if (orderUID !== null) {
+    const getAsyncData = async () => {
+      const accountTypeResponse = await checkAccounType();
+      const userDataResponse = await getUserData();
+
+      setAccountType(accountTypeResponse);
+      setUserData(userDataResponse);
+
+    }
+
+    getAsyncData();
+  }, [])
+
+  const getOrderOwnerUID = () => {
+    database().ref("orderOwnerUID/" + orderUID).once("value", snapshot => {
+      if (snapshot && snapshot.val()) {
+        const data = snapshot.val();
+        setOrderOwnerUID(data.userUID);
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (orderUID !== null && accountType !== null) {
+      setLoadingOrder(true);
+
       database().ref("orders/" + orderUID).once("value", (snapshot) => {
         if (snapshot && snapshot.val()) {
           const data = snapshot.val();
           setCurrentOrder(data);
-        } else console.error(snapshot);
-
+        }
       })
 
       setLoadingHistory(true);
@@ -75,12 +111,11 @@ const ShowOrder = ({ history }) => {
           }))
           setLoadingHistory(false);
         } else {
-          console.error(snapshot);
           setLoadingHistory(false);
         }
       })
 
-      if (realtimeDatabaseUser.accountType === "Admin") {
+      if (accountType === "worker" || accountType === "admin") {
         setLoadingMemo(true);
         database().ref("ordersMemo/" + orderUID).on("value", (snapshot) => {
           if (snapshot && snapshot.val()) {
@@ -88,13 +123,21 @@ const ShowOrder = ({ history }) => {
             setOrderMemo(data);
             setLoadingMemo(false);
           } else {
-            console.error(snapshot);
             setLoadingMemo(false);
           }
         })
+
+        setRenderMemo(<Card className="xl-50">
+          <h2 className="card__title">Notatka</h2>
+          {lodaingMemo ? <Spinner /> : orderMemo ? <div className="initialStyles" dangerouslySetInnerHTML={{ __html: orderMemo }} /> : "Brak notatki"}
+          <Input type="submit" className="btn btn--warning" value="Dodaj notatke" onClick={() => modalHandler("Dodaj notke", <AddNote orderUID={orderUID} />)} />
+        </Card>);
+
+        setRenderUpdateOrderButton(<Input type="submit" className="btn btn--success" value="Aktualizuj zlecenie" onClick={() => modalHandler("Aktualizuj zlecenie", <UpdateOrder orderUID={orderUID} />)} />)
       }
     }
-  }, [orderUID, realtimeDatabaseUser])
+    // eslint-disable-next-line
+  }, [orderUID, accountType])
 
   const modalHandler = (title, component) => {
     dispatch(modal(SHOW, title, component));
@@ -109,7 +152,7 @@ const ShowOrder = ({ history }) => {
 
   return (
     <React.Fragment>
-      <Card>
+      <Card className="xl-50">
         {currentOrder ? <React.Fragment>
           <p style={{ float: "right", fontWeight: "Bold", marginBottom: "15px" }} onClick={() => history.push({ pathname: `/dashboard/wiadomosci`, state: { "orderUID": orderUID } })}>Napisz wiadomość</p>
           <div style={{ clear: "both" }} />
@@ -138,23 +181,13 @@ const ShowOrder = ({ history }) => {
               <p>Zlecenie: {currentOrder.commission}</p>
               <p>Koszt: {currentOrder.cost}zł</p>
             </section>
-
-            {realtimeDatabaseUser.accountType === "Admin" ?
-              <React.Fragment>
-                <Input type="submit" className="btn btn--light" value="Aktualizuj zlecenie" onClick={() => modalHandler("Aktualizuj zlecenie", <UpdateOrder orderUID={orderUID} />)} />
-                <Input type="submit" className="btn btn--warning" value="Dodaj notatke" onClick={() => modalHandler("Dodaj notke", <AddNote orderUID={orderUID} />)} />
-              </React.Fragment> : null}
           </div>
         </React.Fragment> : <Spinner />}
       </Card>
 
-      {realtimeDatabaseUser.accountType === "Admin" ?
-        <Card>
-          <h2 className="card__title">Notatka dla wydającego</h2>
-          {lodaingMemo ? <Spinner /> : orderMemo ? <div className="initialStyles" dangerouslySetInnerHTML={{ __html: orderMemo }} /> : "Brak notatki"}
-        </Card> : null}
+      {renderMemo}
 
-      <Card>
+      <Card className="xl-50 xxl-33">
         <h2 className="card__title">Historia zlecenia</h2>
         {loadingHistory ? <Spinner /> :
           <React.Fragment>
@@ -168,12 +201,13 @@ const ShowOrder = ({ history }) => {
             </div>
           </React.Fragment>
         }
+        {renderUpdateOrderButton}
       </Card>
-      <Card>
+      <Card className="xl-50 xxl-33">
         <h2 className="card__title">Objaśnienia statusów</h2>
         <section className="info__box">
           <p className="info__title">Przyjęte:</p>
-          <p>Zlecenie zostało przyjęte i czeka na rozpoczęcia realizacji przez serwis.</p>
+          <p>Zlecenie zostało przyjęte i oczkuje na rozpoczęcie realizacji przez serwis.</p>
         </section>
         <section className="info__box">
           <p className="info__title">W trakcie:</p>
@@ -181,7 +215,7 @@ const ShowOrder = ({ history }) => {
         </section>
         <section className="info__box">
           <p className="info__title">Oczekiwanie:</p>
-          <p>Realizacja zlecenia została chwilowo wstrzymana z powodu braku dostępnych cześci.</p>
+          <p>Realizacja zlecenia została chwilowo wstrzymana.</p>
         </section>
         <section className="info__box">
           <p className="info__title">Do odbioru:</p>
@@ -192,7 +226,7 @@ const ShowOrder = ({ history }) => {
           <p>Zlecenie zostało odeberane.</p>
         </section>
       </Card>
-      <Card>
+      <Card className="xl-50 xxl-33">
         <h2 className="card__title">Kontakt</h2>
         <section className="info__box">
           <p className="info__title">Serwis:</p>

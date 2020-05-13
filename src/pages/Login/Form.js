@@ -3,7 +3,7 @@ export const Form = () => [
       "type": "text",
       "descName": "Email",
       "placeholder": "Wprowadź email",
-      "name": "emailFB",
+      "name": "email",
     },
     {
       "type": "password",

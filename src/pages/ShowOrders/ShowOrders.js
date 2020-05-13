@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
-import { database } from 'firebase';
+import React, { useEffect, useState, useRef } from 'react'
+import { database, auth } from 'firebase';
+import { useHistory } from 'react-router';
+
+import { checkAccounType } from '../../utility/checkAccountType';
+import { getUserData } from '../../utility/getUserData';
 
 import Card from '../../components/UI/Card/Card';
 import Spinner from '../../components/UI/Spinner/Spinner';
@@ -8,58 +11,95 @@ import Input from '../../components/UI/Input/Input';
 
 import './ShowOrders.css';
 
-const ShowOrders = ({ history }) => {
-  const { realtimeDatabaseUser } = useSelector(state => state.authenticationReducer);
+const ShowOrders = () => {
+  const history = useHistory();
 
   const [listOfOrders, setListOfOrders] = useState(null);
+  const [accountType, setAccountType] = useState(null);
+  const [userData, setUserData] = useState(null)
+  const [userOrders, setUserOrders] = useState(null)
+  const orderCounter = useRef(1);
 
   useEffect(() => {
-    database().ref("orders").on("value", (snapshot) => {
-      if (snapshot && snapshot.val()) {
-        const data = snapshot.val();
-        const listOfOrdersUID = Object.keys(data);
+    const getAsyncData = async () => {
+      const accountTypeResponse = await checkAccounType();
+      const userDataResponse = await getUserData();
 
-        if (realtimeDatabaseUser.accountType !== "Admin") {
-          const userOrders = realtimeDatabaseUser.orders;
-          const keyOfUserOrders = Object.keys(userOrders);
-          let i = 1;
-          setListOfOrders(keyOfUserOrders.map(userOrdersUID => {
-            return listOfOrdersUID.map((order) => {
-              if (order === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
-                return <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-                  <td label="ID"><span>{i++}</span></td>
-                  <td label="Zlecenie"><span>{data[order].orderID}</span></td>
-                  <td label="Klient"><span>{data[order].client}</span></td>
-                  <td label="Telefon"><span>{data[order].telNumber}</span></td>
-                  <td label="Urządzenie"><span>{data[order].deviceName}</span></td>
-                  <td label="Koszt"><span>{data[order].cost}zł</span></td>
-                  <td label="Termin zakończenia"><span>{data[order].endDate}</span></td>
-                </tr>
-              else
-                return null
-            })
-          }))
-        } else {
-          setListOfOrders(listOfOrdersUID.map((order, i) => <tr key={order} onClick={() => redirectToOrder(order)} className="link">
-            <td label="ID"><span>{++i}</span></td>
-            <td label="Zlecenie"><span>{data[order].orderID}</span></td>
-            <td label="Klient"><span>{data[order].client}</span></td>
-            <td label="Telefon"><span>{data[order].telNumber}</span></td>
-            <td label="Urządzenie"><span>{data[order].deviceName}</span></td>
-            <td label="Koszt"><span>{data[order].cost}zł</span></td>
-            <td label="Termin zakończenia"><span>{data[order].endDate}</span></td>
-          </tr>
-          ))
+      setAccountType(accountTypeResponse);
+      setUserData(userDataResponse);
+    }
+
+    getAsyncData();
+  }, [])
+
+  useEffect(() => {
+    const getUserOrders = () => {
+      setUserOrders(Object.keys(userData.orders))
+    }
+
+    if (userData && accountType === "user")
+      getUserOrders();
+  }, [userData, accountType])
+
+
+  useEffect(() => {
+    const getOrderData = (orderUID) => {
+      database().ref("orders/" + orderUID).once("value", (snapshot) => {
+        if (snapshot && snapshot.val()) {
+          const data = snapshot.val();
+          setListOfOrders(prev => {
+            return <React.Fragment>
+              {prev}
+              <tr key={orderUID} onClick={() => redirectToOrder(orderUID)} className="link">
+                <td label="ID"><span>{orderCounter.current}</span></td>
+                <td label="Zlecenie"><span>{data.orderID}</span></td>
+                <td label="Klient"><span>{data.client}</span></td>
+                <td label="Telefon"><span>{data.telNumber}</span></td>
+                <td label="Urządzenie"><span>{data.deviceName}</span></td>
+                <td label="Koszt"><span>{data.cost}zł</span></td>
+                <td label="Termin zakończenia"><span>{data.endDate}</span></td>
+              </tr>
+            </React.Fragment>
+          });
+
+          orderCounter.current = orderCounter.current + 1;
         }
+      })
+    }
+
+    if (accountType && (userOrders || (accountType === "worker" || accountType === "admin"))) {
+      if (accountType === "worker" || accountType === "admin") {
+        database().ref("orders/").once("value", (snapshot) => {
+          if (snapshot && snapshot.val()) {
+            const data = snapshot.val();
+            const listOfOrdersUID = Object.keys(data);
+
+            setListOfOrders(listOfOrdersUID.map((orderUID, i) => <tr key={orderUID} onClick={() => redirectToOrder(orderUID)} className="link">
+              <td label="ID"><span>{++i}</span></td>
+              <td label="Zlecenie"><span>{data[orderUID].orderID}</span></td>
+              <td label="Klient"><span>{data[orderUID].client}</span></td>
+              <td label="Telefon"><span>{data[orderUID].telNumber}</span></td>
+              <td label="Urządzenie"><span>{data[orderUID].deviceName}</span></td>
+              <td label="Koszt"><span>{data[orderUID].cost}zł</span></td>
+              <td label="Termin zakończenia"><span>{data[orderUID].endDate}</span></td>
+            </tr>
+            ));
+          } else
+            setListOfOrders(<h1>Brak danych w bazie</h1>);
+        })
       } else {
-        setListOfOrders(<React.Fragment><tr></tr><h2>Brak danych</h2></React.Fragment>)
+        getOrderData();
+
+        for (let i = 0; i < userOrders.length; i++) {
+          getOrderData(userOrders[i]);
+        }
       }
-    })
+    }
 
     const redirectToOrder = (order) => {
       history.push({ pathname: `/dashboard/zlecenie`, state: { "orderUID": order } });
     }
-  }, [history, realtimeDatabaseUser])
+  }, [accountType, userOrders, history])
 
   return (
     <React.Fragment>

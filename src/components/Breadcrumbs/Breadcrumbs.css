@@ -1,5 +1,7 @@
 .breadcrumb{
   margin-bottom: 35px;
+  height: 46px;
+  width: 100%;
 }
 .breadcrumb__list{
   list-style-type: none;

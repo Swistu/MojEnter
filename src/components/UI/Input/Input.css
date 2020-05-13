@@ -5,7 +5,6 @@
 .input--valid{
   border: 1px solid var(--success);
 }
-
 input, select{
   padding: 6px 12px;
   color: #4F5467;
@@ -27,4 +26,17 @@ input:focus{
 }
 input::placeholder{
   color: #CDC8D5 ;
+}
+
+@media (min-width: 768px){
+  main input, select{
+    width: auto;
+    display: block;
+  }
+  main input[value="Anuluj"], 
+  main input[type="submit"]{
+    display: flex;
+    margin-left: auto;
+    justify-content: center;
+  }
 }

@@ -4,7 +4,7 @@ import { database } from 'firebase';
 
 import Input from '../../UI/Input/Input';
 
-const UpdateOrder = ({ orderUID, ...props }) => {
+const UpdateOrder = ({ orderUID }) => {
 
   const d = new Date();
   const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
@@ -14,20 +14,16 @@ const UpdateOrder = ({ orderUID, ...props }) => {
   const [orderStatus, setOrderStatus] = useState("inProgress");
 
   const updateOrder = () => {
-    if (content && orderStatus && date) {
-      const ordersHistoryRef = database().ref('ordersHistory/' + orderUID).push();
-      const payLoad = {
-        status: orderStatus,
-        date: date,
-        description: content
-      }
-
-      ordersHistoryRef.set(payLoad)
-        .then(console.log("dodano"));
-    } else {
-      console.error("Nie moge zaktualizowac zlecenia");
+    const ordersHistoryRef = database().ref('ordersHistory/' + orderUID).push();
+    const payLoad = {
+      status: orderStatus,
+      date: date,
+      description: content ? content : ""
     }
+
+    ordersHistoryRef.set(payLoad)
   }
+
 
   return (
     <React.Fragment>

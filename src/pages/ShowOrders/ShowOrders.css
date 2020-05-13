@@ -1,5 +1,22 @@
 
-@media screen and (max-width: 1170px){
+@media (min-width: 768px){
+  .page.zlecenia .btn {
+    width: 33.33%;
+  }
+  .page.zlecenia .btn:nth-child(3n + 1) {
+    border-radius: 2px 0 0 2px;
+  }
+  .page.zlecenia .btn:nth-child(3n + 2) {
+    border-radius: 0;
+  }
+  .page.zlecenia .btn:nth-child(3n + 3) {
+    border-radius: 0 2px 2px 0;
+  }
+}
+@media (max-width: 1170px){
+  table#allOrders{
+    display: flex;
+  }
   table#allOrders thead{
     display: none;
   }
@@ -11,8 +28,8 @@
     display: block;
     margin-bottom: 26px;
   }
-  table#allOrders{
-    display: flex;
+  table#allOrders td[label="ID"]{
+    display: none;
   }
   table#allOrders td{
     display: flex;
@@ -21,6 +38,7 @@
     align-items: center;
     font-weight: 500;
     background-color: var(--info);
+    text-align: left;
   }
   table#allOrders td span{
     width: 50%;

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { database } from 'firebase';
+import React, { useState, useEffect } from 'react';
+import firebase, { auth, database, functions } from 'firebase';
 import { useDispatch } from 'react-redux';
 
 import { Form as getFormInputs } from './Form';
@@ -8,9 +8,9 @@ import { SHOW, HIDE } from '../../store/actionTypes'
 import useForm from '../../hooks/useForm/useForm';
 
 import OrderSummary from '../../components/OrderSummary/OrderSummary'
-import Input from '../../components/UI/Input/Input';
 import Card from '../../components/UI/Card/Card';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import NewOrderExcelFile from '../../components/Admin/NewOrderExcelFile/NewOrderExcelFile';
 
 import './AddOrder.css';
 
@@ -18,11 +18,12 @@ const AddOrder = () => {
 	const today = new Date();
 	const dispatch = useDispatch();
 
-	const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
-	const orderAddDate = today.toLocaleDateString('pl-PL', dateOptions);
 	const [addingOrder, setAddingOrder] = useState(false);
 	const [newOrderAccepted, setNewOrderAccepted] = useState(false);
 	const [orderAddingSuccesful, setOrderAddingSuccesful] = useState(false);
+
+	const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', seconds: '2-digit' };
+	const orderAddDate = today.toLocaleDateString('pl-PL', dateOptions);
 
 	const checkOrder = () => {
 		dispatch(modal(SHOW, "Podsumowanie", <OrderSummary values={values} orderAccepted={orderAccepted} />));
@@ -34,82 +35,113 @@ const AddOrder = () => {
 		addOrder();
 	}
 
-	console.log(getFormInputs());
-
 	const addOrder = () => {
 		setAddingOrder(true);
-		const ordersRef = database().ref('orders/').push();
-		const orderUID = ordersRef.key;
-		const unassignedOrdersRef = database().ref('unassignedOrders/').push();
-		const unassignedOrderUID = unassignedOrdersRef.key;
-		const ordersHistoryRef = database().ref('ordersHistory/' + orderUID).push();
-		const order = {
-			"client": values.client,
-			"address": values.address,
-			"telNumber": values.telNumber,
-			"orderID": values.orderNumber,
-			"deviceName": values.deviceName,
-			"accessory": values.accessory,
-			"deviceSerialNumber": values.deviceSerialNumber,
-			"cost": values.cost,
-			"endDate": values.endDate,
-			"commission": values.commission,
-			"customerComment": values.customerComment,
-			"vendorComment": values.vendorComment,
-		}
-		const unassignedOrder = {
-			"orderUID": orderUID,
-			"password": "123",
-		}
-		const orderHistory = {
-			status: "new",
-			date: orderAddDate,
-			description: "Zlecenie zostało przyjęte."
-		}
+		const addMessage = functions().httpsCallable('checkUserByMail');
 
-		ordersHistoryRef.set(orderHistory);
-		ordersRef.set(order);
-		unassignedOrdersRef.set(unassignedOrder)
-			.then(() => {
-				setOrderAddingSuccesful(true);
-				document.getElementById("test").innerHTML = "Numer zlecenie dla klienta: " + unassignedOrderUID;
-			});
+		const orderOwner = auth().currentUser.getIdToken().then(async tokenID => {
+			return await addMessage({ email: values.email, token: tokenID }).then(result => {
+				return result;
+			})
+		})
 
+		orderOwner.then(ownerUID => {
+			const orderRef = database().ref("orders/").push();
+			const orderUID = orderRef.key;
+			const userOrdersRef = database().ref('users/' + ownerUID.data + "/orders");
+			const ordersHistoryRef = database().ref('ordersHistory/' + orderUID).push();
+			const orderOwnerUIDRef = database().ref('orderOwnerUID/' + orderUID);
+			const appSettingsRef = database().ref('appSettings/');
+			const unassignedOrderRef = database().ref('unassignedOrders/').push();
+			const currentOrderNumber = values.orderNumber.substring(values.orderNumber.lastIndexOf('/') + 1)
+
+			const order = {
+				"orderID": values.orderNumber,
+				"claimType": values.claimType,
+				"client": values.client,
+				"address": values.address,
+				"email": values.email,
+				"telNumber": values.telNumber,
+				"deviceName": values.deviceName,
+				"accessory": values.accessory,
+				"deviceSerialNumber": values.deviceSerialNumber,
+				"devicePassword": values.devicePassword,
+				"vendorComment": values.vendorComment,
+				"customerComment": values.customerComment,
+				"commission": values.commission,
+				"cost": values.cost,
+				"endDate": values.endDate,
+				"userUID": ownerUID.data ? ownerUID.data : "unassignedOrder"
+			}
+			const orderHistory = {
+				"status": "new",
+				"date": orderAddDate,
+				"description": "Zlecenie zostało przyjęte."
+			}
+			const appSettings = {
+				"currentOrderNumber": parseInt(currentOrderNumber, "10") + 1
+			}
+			const orderOwner = {
+				"userUID": ownerUID.data ? ownerUID.data : "unassignedOrder"
+			}
+			const userOrders = {
+				[orderUID]: true
+			}
+			const unassignedOrder = {
+				"orderUID": orderUID
+			}
+
+			unassignedOrderRef.set(unassignedOrder);
+			orderOwnerUIDRef.set(orderOwner);
+			ordersHistoryRef.set(orderHistory);
+			orderRef.set(order);
+			appSettingsRef.update(appSettings);
+
+			if (ownerUID.data) {
+				userOrdersRef.update(userOrders);
+
+				const notificationsRef = database().ref('notifications/' + ownerUID.data).push();
+				const notificationsData = {
+					"orderUID": orderUID,
+					"timestamp": firebase.database.ServerValue.TIMESTAMP,
+					"type": "newOrder",
+					"read": "false",
+				}
+				notificationsRef.set(notificationsData);
+			}
+			setOrderAddingSuccesful(true);
+		})
+
+		setOrderAddingSuccesful(true);
 		setAddingOrder(false);
 	}
 
+	useEffect(() => {
+		const today = new Date();
+		const year = today.getFullYear();
+		const month = today.getMonth() < 9 ? "0" + (today.getMonth() + 1) : today.getMonth() + 1
 
-	const renderFormInputs = () => {
-		return getFormInputs().map((res) => {
-			if (res.type !== "submit")
-				return <React.Fragment key={res.name}>
-					<Input
-						{...res}
-						onChange={handleChange}
-						value={values[res.name]}
-						className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
-					/>
-					{errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
-				</React.Fragment>
-			else
-				return <React.Fragment key={res.name}>
-					<Input {...res} />
-					{Object.entries(errors).length === 0 && errors.constructor === Object ? null : <p className={"feedback feedback--invalid"}>{"Proszę poprawić błędy w formularzu"}</p>}
-				</React.Fragment>
-		})
-	}
+		database().ref('appSettings/').on("value", (snapshot) => {
+			if (snapshot && snapshot.val()) {
+				const data = snapshot.val();
 
+				changeValue("orderNumber", year + "/" + month + "/" + data.currentOrderNumber);
+			}
+		});
+		// eslint-disable-next-line
+	}, [])
 
-	const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(checkOrder, getFormInputs());
+	const { handleSubmit, values, renderInputs, changeValue } = useForm(checkOrder, getFormInputs());
 	return (
 		<React.Fragment>
 			<Card>
 				<form onSubmit={handleSubmit}>
 					{
 						newOrderAccepted ? addingOrder ? <Spinner />
-							: orderAddingSuccesful ? <div id="test"></div>
+							: orderAddingSuccesful ?
+								<NewOrderExcelFile data={values} />
 								: "Wystapił problem przy dodawaniu zlecenia"
-							: renderFormInputs()
+							: renderInputs()
 					}
 				</form>
 			</Card>

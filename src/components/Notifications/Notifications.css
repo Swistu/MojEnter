@@ -5,11 +5,11 @@
 #notifications__submmenu .message__item:nth-last-child(n + 5){
   display: none;
 }
-.notifications__list .message__item[label="NewOrder"] .message__image {
+.notifications__list .message__item[label="newOrder"] .message__image {
   background-color: var(--info);
   border-color: var(--info);
 }
-.notifications__list .message__item[label="NewOrder"] .message__image:hover {
+.notifications__list .message__item[label="newOrder"] .message__image:hover {
   background-color: #3e59e3;
   border-color: #3250e2;
 }

@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { database } from 'firebase';
+import { database, auth } from 'firebase';
+
+import { checkAccounType } from '../../utility/checkAccountType';
 
 import Card from '../../components/UI/Card/Card';
 import MessageBox from '../../components/MessageBox/MessageBox';
 import MessageItem from '../../components/MessageBox/MessageItem/MessageItem';
 
 const Notifications = ({ history }) => {
-  const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
-
   const [notificationList, setNotificationList] = useState(null);
 
   useEffect(() => {
@@ -43,11 +42,14 @@ const Notifications = ({ history }) => {
       }
     }
     const readNotifications = (notificationUID) => {
-      if (realtimeDatabaseUser.accountType === "Admin")
-        database().ref("notifications/admin/" + notificationUID).update({ "read": "true" })
-      else
-        database().ref("notifications/" + firebaseUser.uid + "/" + notificationUID).update({ "read": "true" })
+      checkAccounType().then(isAdmin => {
+        if (isAdmin)
+          database().ref("notifications/admin/" + notificationUID).update({ "read": "true" });
+        else
+          database().ref("notifications/" + auth().currentUser.uid + "/" + notificationUID).update({ "read": "true" });
+      });
     }
+
     const notificationRedirect = (notificationType, state) => {
       switch (notificationType) {
         case "NewOrder":
@@ -61,57 +63,58 @@ const Notifications = ({ history }) => {
       }
     }
 
-    if (realtimeDatabaseUser.accountType === "Admin") {
-      database().ref('notifications/admin').once("value", (snapshot) => {
-        if (snapshot && snapshot.val()) {
-          const data = snapshot.val();
+    checkAccounType().then(isAdmin => {
+      if (isAdmin)
+        database().ref('notifications/admin').once("value", (snapshot) => {
+          if (snapshot && snapshot.val()) {
+            const data = snapshot.val();
 
-          const keyOfNotification = Object.keys(data);
+            const keyOfNotification = Object.keys(data);
 
-          setNotificationList(keyOfNotification.map((notificationUID) => {
-            return <MessageItem
-              className={data[notificationUID].read === "false" ? "unread" : ""}
-              label={data[notificationUID].type}
-              key={notificationUID}
-              icon={notificationIcon(data[notificationUID].type)}
-              title={notificationTitle(data[notificationUID].type)}
-              descriptionFirst={notificationDescription(data[notificationUID].type)}
-              descriptionSecond={data[notificationUID].time}
-              onClick={() => {
-                readNotifications(notificationUID);
-                notificationRedirect(data[notificationUID].type, { "orderUID": data[notificationUID].orderUID })
-              }}
-            />
-          }))
-        }
-      })
-    } else if (firebaseUser.uid) {
-      database().ref('notifications/' + firebaseUser.uid).once("value", (snapshot) => {
-        if (snapshot && snapshot.val()) {
-          const data = snapshot.val();
+            setNotificationList(keyOfNotification.map((notificationUID) => {
+              return <MessageItem
+                className={data[notificationUID].read === "false" ? "unread" : ""}
+                label={data[notificationUID].type}
+                key={notificationUID}
+                icon={notificationIcon(data[notificationUID].type)}
+                title={notificationTitle(data[notificationUID].type)}
+                descriptionFirst={notificationDescription(data[notificationUID].type)}
+                descriptionSecond={data[notificationUID].time}
+                onClick={() => {
+                  readNotifications(notificationUID);
+                  notificationRedirect(data[notificationUID].type, { "orderUID": data[notificationUID].orderUID })
+                }}
+              />
+            }))
+          }
+        })
+      else
+        database().ref('notifications/' + auth().currentUser.uid).once("value", (snapshot) => {
+          if (snapshot && snapshot.val()) {
+            const data = snapshot.val();
 
-          const keyOfNotification = Object.keys(data);
+            const keyOfNotification = Object.keys(data);
 
-          setNotificationList(keyOfNotification.map((notificationUID) => {
-            return <MessageItem
-              className={data[notificationUID].read === "false" ? "unread" : ""}
-              label={data[notificationUID].type}
-              key={notificationUID}
-              icon={notificationIcon(data[notificationUID].type)}
-              title={notificationTitle(data[notificationUID].type)}
-              descriptionFirst={notificationDescription(data[notificationUID].type)}
-              descriptionSecond={data[notificationUID].time}
-              onClick={() => {
-                readNotifications(notificationUID);
-                notificationRedirect(data[notificationUID].type, { "orderUID": data[notificationUID].orderUID })
-              }}
-            />
-          }))
-        }
-      })
-    }
+            setNotificationList(keyOfNotification.map((notificationUID) => {
+              return <MessageItem
+                className={data[notificationUID].read === "false" ? "unread" : ""}
+                label={data[notificationUID].type}
+                key={notificationUID}
+                icon={notificationIcon(data[notificationUID].type)}
+                title={notificationTitle(data[notificationUID].type)}
+                descriptionFirst={notificationDescription(data[notificationUID].type)}
+                descriptionSecond={data[notificationUID].time}
+                onClick={() => {
+                  readNotifications(notificationUID);
+                  notificationRedirect(data[notificationUID].type, { "orderUID": data[notificationUID].orderUID })
+                }}
+              />
+            }))
+          }
+        })
+    })
     //eslint-disable-next-line
-  }, [realtimeDatabaseUser, firebaseUser])
+  }, [])
 
   return (
     <Card>

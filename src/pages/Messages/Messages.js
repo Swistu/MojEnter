@@ -1,148 +1,164 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux';
-import { database } from 'firebase';
+import firebase, { auth, database } from 'firebase';
+
+import { checkAccounType } from '../../utility/checkAccountType';
+import { getUserData } from '../../utility/getUserData';
+
 
 import Card from '../../components/UI/Card/Card'
 import Input from '../../components/UI/Input/Input';
-
-import './Messages.css';
 import MessageBox from '../../components/MessageBox/MessageBox';
 import MessageItem from '../../components/MessageBox/MessageItem/MessageItem';
 
-const Messages = ({ history }) => {
-  const { realtimeDatabaseUser, firebaseUser } = useSelector(state => state.authenticationReducer);
+import './Messages.css';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
+const Messages = ({ history }) => {
   const [newMessage, setNewMessage] = useState("");
   const [contactItem, setContactItem] = useState();
   const [orderMessages, setOrderMessages] = useState();
   const [orderUID, setOrderUID] = useState(history.location.state ? history.location.state.orderUID : null);
   const [receiverUserUID, setReceiverUserUID] = useState(null);
+  const [userData, setUserData] = useState(null)
+  const [accountType, setAccountType] = useState(null);
 
   useEffect(() => {
-    if (realtimeDatabaseUser.accountType === "Admin") {
-      database().ref('orders/' + orderUID).once("value", (snapshot) => {
+    const getLastChatItem = async (userOrdersKey) => {
+      const ordersLastMessage = [];
+
+      for (let i = 0; i < userOrdersKey.length; i++) {
+        await database().ref('ordersMessage/' + userOrdersKey[i]).limitToLast(1).once("value", (snapshot) => {
+          if (snapshot && snapshot.val()) {
+            const data = snapshot.val();
+            const messageKey = Object.keys(data);
+            const obj = {
+              ...data[messageKey],
+              "orderUID": userOrdersKey[i]
+            }
+
+            ordersLastMessage.push(obj);
+          }
+        })
+      }
+      return ordersLastMessage;
+    }
+
+    const getAllOrdersChat = async () => {
+      let ordersLastMessage;
+      let userOrdersKey;
+
+      if (accountType !== "worker" && accountType !== "admin") {
+        userOrdersKey = Object.keys(userData.orders)
+        ordersLastMessage = await getLastChatItem(userOrdersKey)
+      } else {
+        const snapshot = await database().ref('orderOwnerUID').once("value");
         if (snapshot && snapshot.val()) {
           const data = snapshot.val();
-          if (data.userUID)
-            setReceiverUserUID(data.userUID);
-          else
-            setReceiverUserUID(null);
+          userOrdersKey = Object.keys(data);
+
+          ordersLastMessage = await getLastChatItem(userOrdersKey);
         }
-      });
-    } else setReceiverUserUID("Admin");
-  }, [orderUID, realtimeDatabaseUser])
+      }
+
+      setContactItem(ordersLastMessage.map(lastMessage => <MessageItem
+        key={lastMessage.orderUID}
+        title={lastMessage.author}
+        descriptionFirst={lastMessage.orderID}
+        descriptionSecond={lastMessage.message.substr(0, 20)}
+        imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
+        onClick={() => { setOrderUID(lastMessage.orderUID); }}
+      />
+      ));
+    }
+
+    if (userData !== null && accountType !== null)
+      getAllOrdersChat();
+  }, [userData, accountType])
 
   useEffect(() => {
-    database().ref('latestMessage/').on("value", (snapshot) => {
-      if (snapshot && snapshot.val()) {
-        const data = snapshot.val();
-        const keyOfAllOrders = Object.keys(data);
-
-        if (realtimeDatabaseUser.accountType !== "Admin") {
-          const userOrders = realtimeDatabaseUser.orders;
-          const keyOfUserOrders = Object.keys(userOrders);
-          setContactItem(keyOfUserOrders.map(userOrdersUID =>
-            keyOfAllOrders.map(orderMessageUID => {
-              if (orderMessageUID === realtimeDatabaseUser.orders[userOrdersUID].orderUID)
-                return <MessageItem
-                  key={orderMessageUID}
-                  title={data[orderMessageUID].author}
-                  descriptionFirst={data[orderMessageUID].orderID}
-                  descriptionSecond={data[orderMessageUID].message.substr(0, 20)}
-                  imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
-                  onClick={() => { setOrderUID(orderMessageUID); }}
-                />
+    if (orderUID !== null) {
+      if (accountType !== null) {
+        if (accountType === "admin" || accountType === "worker") {
+          database().ref('orderOwnerUID/' + orderUID).once("value", (snapshot) => {
+            if (snapshot && snapshot.val()) {
+              const data = snapshot.val();
+              if (data.userUID)
+                setReceiverUserUID(data.userUID);
               else
-                return null
-            })
-          ));
-        } else {
-          setContactItem(keyOfAllOrders.map(orderMessageUID => <MessageItem
-            key={orderMessageUID}
-            title={data[orderMessageUID].author}
-            descriptionFirst={data[orderMessageUID].orderID}
-            descriptionSecond={data[orderMessageUID].message.substr(0, 20)}
-            imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
-            onClick={() => { setOrderUID(orderMessageUID); }}
-          />
-          ));
-        }
-      } else {
-        setContactItem(<p style={{ textAlign: "center", padding: "20px" }}>Utwórz rozmowe, aby dodać ją do listy</p>)
+                setReceiverUserUID(null);
+            }
+          });
+        } else setReceiverUserUID("admin");
       }
-    })
-  }, [realtimeDatabaseUser])
+
+      database().ref('ordersMessage/' + orderUID).on("value", (snapshot) => {
+        if (snapshot && snapshot.val()) {
+          const data = snapshot.val();
+          const keyOfMessages = Object.keys(data);
+
+          setOrderMessages(keyOfMessages.map((messageUID, i) => <MessageItem
+            key={messageUID}
+            imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
+            title={auth().currentUser.uid === data[messageUID].from ? undefined : data[messageUID].author}
+            className={auth().currentUser.uid === data[messageUID].from ? "sender-me" : null}
+            descriptionFirst={data[messageUID].message}
+            descriptionSecond={data[messageUID].datetime}
+          />
+          ))
+        }
+      })
+    }
+  }, [orderUID, accountType])
 
   useEffect(() => {
-    database().ref('ordersMessage/' + orderUID).orderByChild('DateTime').on("value", (snapshot) => {
-      if (snapshot && snapshot.val()) {
-        const data = snapshot.val();
-        const keyOfMessages = Object.keys(data);
+    const getAsyncData = async () => {
+      const accountTypeResponse = await checkAccounType();
+      const userDataResponse = await getUserData();
 
-        setOrderMessages(keyOfMessages.map((messageUID, i) => <MessageItem
-          key={messageUID}
-          imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
-          title={firebaseUser.uid === data[messageUID].from ? undefined : data[messageUID].author}
-          className={firebaseUser.uid === data[messageUID].from ? "sender-me" : null}
-          descriptionFirst={data[messageUID].message}
-          descriptionSecond={data[messageUID].datetime}
-        />
-        ))
-      }
-    })
-  }, [orderUID, firebaseUser])
+      setAccountType(accountTypeResponse);
+      setUserData(userDataResponse);
+    }
+
+    getAsyncData();
+  }, [])
+
 
   const addMessage = () => {
-    if (orderUID !== null && newMessage !== "") {
+    if (orderUID !== null && newMessage !== "" && userData !== null && receiverUserUID !== null) {
       const ordersMessageRef = database().ref('ordersMessage/' + orderUID).push();
-      const latestMessageRef = database().ref('latestMessage/' + orderUID);
-      const today = new Date();
-      const time = today.getHours() + ':' + today.getMinutes();
-      const dateTime = time;
       const ordersMessageData = {
-        "from": firebaseUser.uid,
-        "author": realtimeDatabaseUser.name,
-        "datetime": dateTime,
-        "message": newMessage,
-      };
-      const latestMessageData = {
-        "from": firebaseUser.uid,
-        "author": realtimeDatabaseUser.name,
-        "orderUID": orderUID,
-        "dateTime": dateTime,
+        "from": auth().currentUser.uid,
+        "to": receiverUserUID,
+        "author": userData.name,
+        "timestamp": firebase.database.ServerValue.TIMESTAMP,
         "message": newMessage,
       };
 
       ordersMessageRef.set(ordersMessageData)
         .catch(error => console.error(error))
         .finally(setNewMessage(""));
-      latestMessageRef.set(latestMessageData)
-        .catch(error => console.error(error));
 
-      if (receiverUserUID !== null) {
-        if (realtimeDatabaseUser.accountType === "Admin") {
-          const notificationsRef = database().ref('notifications/' + receiverUserUID).push();
-          const notificationsData = {
-            "content": "Nowa wiadomość",
-            "orderUID": orderUID,
-            "time": dateTime,
-            "type": "Message",
-            "read": "false",
-          }
-          notificationsRef.set(notificationsData)
-            .catch(error => console.error(error));
-        } else {
-          const notificationsRef = database().ref('notifications/admin').push();
-          const notificationsData = {
-            "content": "Nowa wiadomość",
-            "orderUID": orderUID,
-            "time": dateTime,
-            "type": "Message",
-            "read": "false",
-          }
-          notificationsRef.set(notificationsData)
-            .catch(error => console.error(error));
+
+      if (accountType !== null && (accountType === "admin" || accountType === "worker")) {
+        const notificationsRef = database().ref('notifications/' + receiverUserUID).push();
+        const notificationsData = {
+          "orderUID": orderUID,
+          "timestamp": firebase.database.ServerValue.TIMESTAMP,
+          "type": "message",
+          "read": "false",
         }
+
+        notificationsRef.set(notificationsData);
+      } else {
+        const notificationsRef = database().ref('notifications/admin').push();
+        const notificationsData = {
+          "from": userData.name,
+          "orderUID": orderUID,
+          "timestamp": firebase.database.ServerValue.TIMESTAMP,
+          "type": "message",
+          "read": "false",
+        }
+        notificationsRef.set(notificationsData);
       }
     }
   }
@@ -150,10 +166,10 @@ const Messages = ({ history }) => {
   return (
     <React.Fragment>
       <Card style={{ paddingBottom: "0" }}>
-        <div className="messages__box">
+        <div className="message__page">
           <div className="contact__box">
             <MessageBox>
-              {contactItem}
+              {contactItem ? contactItem : <Spinner />}
             </MessageBox>
           </div>
           <div className="chat__box">

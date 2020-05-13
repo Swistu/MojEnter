@@ -1,116 +1,60 @@
 import React, { useState } from 'react';
-import { database, auth } from 'firebase';
-import { useSelector } from 'react-redux';
+import { functions, auth } from 'firebase';
 
 import { Form as getFormInputs } from './Form';
 import useForm from '../../hooks/useForm/useForm';
 
 import Card from '../../components/UI/Card/Card';
-import Input from '../../components/UI/Input/Input';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
 const AssignOrder = () => {
   const [isValidatingAssign, setIsValidatingAssign] = useState(false);
   const [orderAssigned, setOrderAssigned] = useState(false);
-  const { firebaseUser } = useSelector(state => state.authenticationReducer);
 
   const assignOrder = () => {
     setIsValidatingAssign(true);
 
-    const promises = [];
-    const unassignedOrdersRef = database().ref('unassignedOrders/' + values.unassignedOrderUID);
-    unassignedOrdersRef.once("value", snapshot => {
-      if (snapshot && snapshot.val()) {
-        const data = snapshot.val();
-        const userRef = database().ref('users/' + firebaseUser.uid);
-        const userOrders = database().ref('users/' + firebaseUser.uid + '/orders');
-        const ordersRef = database().ref('orders/' + data.orderUID);
+    const assignOrderFunc = functions().httpsCallable('assignOrder');
 
-        promises.push(
-          userRef.update({
-            "accountType": "User",
-          })
-        );
-        promises.push(
-          userOrders.push({
-            "orderUID": data.orderUID
-          })
-        );
-        promises.push(
-          ordersRef.update({
-            "userUID": firebaseUser.uid
-          })
-        );
+    const responseAssignOrder = auth().currentUser.getIdToken().then(async tokenID => {
+      return await assignOrderFunc({ unassignedOrderUID: values.unassignedOrderUID, token: tokenID }).then(result => {
+        return result;
+      })
+    })
 
-        Promise.all(promises).then((res) => {
-          unassignedOrdersRef.remove();
-          setIsValidatingAssign(false);
-          setOrderAssigned(true);
-        });
+    responseAssignOrder
+      .then((response) => {
+        console.log(response);
+        if (response.data === null)
+          errors.unassignedOrderUID = "Podany numer zlecenia nie istnieje lub został już przypisany.";
+        else if (response.data === true)
+          setOrderAssigned(true)
+        else if (response.data === false)
+          errors.unassignedOrderUID = "Podany numer zlecenia nie istnieje lub został już przypisany.";
 
-        if (firebaseUser) {
-          const notificationsRef = database().ref('notifications/' + firebaseUser.uid).push();
-          const today = new Date();
-          const time = today.getHours() + ':' + today.getMinutes();
-          const dateTime = time;
-          const notificationsData = {
-            "content": "Przypisałeś zlecenie do swojego konta.",
-            "time": dateTime,
-            "orderUID": data.orderUID,
-            "type": "NewOrder",
-            "read": "false",
-          }
-          notificationsRef.set(notificationsData)
-            .catch(error => console.error(error));
-        }
-      } else {
-        errors.unassignedOrderUID = "Zlecenie o podanym numerze nie istnieje albo zostało już przypisane";
+      })
+      .catch(() => {
+        console.loh("error")
+        // errors.unassignedOrderUID = "Podany numer zlecenia nie istnieje lub został już przypisany.";
+      })
+      .finally(() => {
         setIsValidatingAssign(false);
-      }
-    })
+      })
   }
 
-  const sendMail = () => {
-    auth().currentUser.sendEmailVerification();
-  }
-
-  const renderFormInputs = () => {
-    return getFormInputs().map((res) => {
-      if (res.type !== "submit")
-        return <React.Fragment key={res.name}>
-          <Input
-            {...res}
-            onChange={handleChange}
-            value={values[res.name]}
-            className={isSubmitting ? errors[res.name] ? "input--invalid" : "input--valid" : null}
-          />
-          {errors[res.name] && <p className={"feedback feedback--invalid"}>{errors[res.name]}</p>}
-        </React.Fragment>
-      else
-        return <React.Fragment key={res.name}>
-          <Input {...res} />
-        </React.Fragment>
-    })
-  }
-
-  const { handleChange, handleSubmit, values, errors, isSubmitting } = useForm(assignOrder, getFormInputs());
+  const { handleSubmit, values, renderInputs, errors } = useForm(assignOrder, getFormInputs());
   return (
     <React.Fragment>
       <Card>
-        {firebaseUser.emailVerified ?
+        {
           orderAssigned ? <p>Przypisano poprawnie zlecenie</p> :
             <form onSubmit={handleSubmit}>
               {
                 isValidatingAssign ? <Spinner /> :
-                  renderFormInputs()
+                  renderInputs()
               }
-            </form> :
-          <React.Fragment>
-            Wyślij email weryfikacyjny, aby aktywować konto.
-            <Input type="button" className="btn btn--light" onClick={sendMail} value="Wyślij" />
-          </React.Fragment>
+            </form>
         }
-
       </Card>
     </React.Fragment>
   )
