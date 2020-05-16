@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
 import { database } from 'firebase';
+
+import CKEditor from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 import Input from '../../UI/Input/Input';
 
@@ -38,20 +40,14 @@ const UpdateOrder = ({ orderUID }) => {
       </select>
 
       <h2 className="card__title">Dodaj notatke:</h2>
-      <Editor
-        apiKey="5pm48o3ipn3vwvjvx337kxdgnt1bsdaxlgbrw5s9e9cdv89w"
-        init={{
-          menubar: false,
-          plugins: [
-            'advlist autolink lists link image',
-            'charmap print preview anchor help',
-            'searchreplace visualblocks code',
-            'insertdatetime media table paste wordcount'
-          ],
-          inline_styles: true,
-          height: 200
+      <CKEditor
+        editor={ClassicEditor}
+        onChange={(event, editor) => {
+          const data = editor.getData();
+          console.log({ event, editor, data });
+          setContent(data);
         }}
-        onChange={(e) => setContent(e.target.getContent())} />
+      />
 
       <Input type="button" className="btn btn--success" value="Zatwierdź" onClick={updateOrder} />
     </React.Fragment>

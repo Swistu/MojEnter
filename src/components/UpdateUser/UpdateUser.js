@@ -1,22 +1,31 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { database } from 'firebase';
+import React, { useEffect } from 'react';
+import { database, auth } from 'firebase';
 
 import { Form as getFormInputs } from './Form';
 import useForm from '../../hooks/useForm/useForm';
 
-const UserUpdate = () => {
-  const { firebaseUser } = useSelector(state => state.authenticationReducer)
+const UserUpdate = ({ userData }) => {
+
+  useEffect(() => {
+
+      changeValue("displayName", "userData.name");
+      changeValue("telNumber", userData.telephone);
+      changeValue("address", userData.address);
+    
+
+    console.log(userData);
+    // updateForm();
+  }, [])
 
   const updateData = () => {
-    database().ref("users/" + firebaseUser.uid).update({
+    database().ref("users/" + auth().currentUser.uid).update({
       name: values.displayName,
       phoneNumber: values.telNumber,
       address: values.address,
     });
   }
-
-  const { handleSubmit, values, renderInputs } = useForm(updateData, getFormInputs());
+  const { handleSubmit, values, renderInputs, changeValue } = useForm(updateData, getFormInputs());
+  // changeValue("displayName", "a");
   return (
     <React.Fragment>
       <form onSubmit={handleSubmit}>

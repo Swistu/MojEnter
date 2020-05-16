@@ -13,9 +13,9 @@ const Notifications = ({ history }) => {
   useEffect(() => {
     const notificationTitle = (notificationType) => {
       switch (notificationType) {
-        case "NewOrder":
+        case "newOrder":
           return "Nowe zlecenie";
-        case "Message":
+        case "message":
           return "Nowa wiadomość";
         default:
           return ""
@@ -23,9 +23,9 @@ const Notifications = ({ history }) => {
     }
     const notificationDescription = (notificationType) => {
       switch (notificationType) {
-        case "NewOrder":
+        case "newOrder":
           return "Przypisano zlecenie do Twojego konta.";
-        case "Message":
+        case "message":
           return "Otrzymano nową wiadomość.";
         default:
           return ""
@@ -33,9 +33,9 @@ const Notifications = ({ history }) => {
     }
     const notificationIcon = (notificationType) => {
       switch (notificationType) {
-        case "NewOrder":
+        case "newOrder":
           return "fas fa-file-download";
-        case "Message":
+        case "message":
           return "fas fa-comment-dots";
         default:
           return ""
@@ -52,10 +52,10 @@ const Notifications = ({ history }) => {
 
     const notificationRedirect = (notificationType, state) => {
       switch (notificationType) {
-        case "NewOrder":
+        case "newOrder":
           history.push({ pathname: `/dashboard/zlecenie`, state: state })
           break;
-        case "Message":
+        case "message":
           history.push({ pathname: `/dashboard/wiadomosci`, state: state })
           break;
         default:
@@ -63,8 +63,8 @@ const Notifications = ({ history }) => {
       }
     }
 
-    checkAccounType().then(isAdmin => {
-      if (isAdmin)
+    checkAccounType().then(accountType => {
+      if (accountType !== "user")
         database().ref('notifications/admin').once("value", (snapshot) => {
           if (snapshot && snapshot.val()) {
             const data = snapshot.val();

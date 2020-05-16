@@ -1,10 +1,11 @@
-* {
+*{
   box-sizing: border-box;
   outline: 0;
   margin: 0;
   padding: 0;
   font-family: 'Rubik', sans-serif;;
 }
+
 :root{
   --primary: #7c8798;
   --dark: #1c2d41;
@@ -80,6 +81,10 @@ th{
   background-color: var(--info);
   color: #ffffff;
   font-weight: 500;
+}
+th:hover{
+  background-color: #4e65d7;
+  cursor: pointer;
 }
 .label__text{
   display: block;
@@ -175,9 +180,14 @@ th{
 .page__title::first-letter{
   text-transform: uppercase;
 }
-.initialStyles *{
-  margin: initial;
-  padding: initial;
+.initialStyles ul, .ck-content ul{
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
 }
 .rounded-circle{
   border-radius: 50%;

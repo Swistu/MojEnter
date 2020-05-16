@@ -44,34 +44,39 @@ const Messages = ({ history }) => {
     }
 
     const getAllOrdersChat = async () => {
-      let ordersLastMessage;
-      let userOrdersKey;
 
-      if (accountType !== "worker" && accountType !== "admin") {
-        userOrdersKey = Object.keys(userData.orders)
-        ordersLastMessage = await getLastChatItem(userOrdersKey)
-      } else {
-        const snapshot = await database().ref('orderOwnerUID').once("value");
-        if (snapshot && snapshot.val()) {
-          const data = snapshot.val();
-          userOrdersKey = Object.keys(data);
+      if (userData.orders) {
+        let ordersLastMessage;
+        let userOrdersKey;
 
-          ordersLastMessage = await getLastChatItem(userOrdersKey);
+        if (accountType !== "worker" && accountType !== "admin") {
+          userOrdersKey = Object.keys(userData.orders)
+          ordersLastMessage = await getLastChatItem(userOrdersKey)
+        } else {
+          const snapshot = await database().ref('orderOwnerUID').once("value");
+          if (snapshot && snapshot.val()) {
+            const data = snapshot.val();
+            userOrdersKey = Object.keys(data);
+
+            ordersLastMessage = await getLastChatItem(userOrdersKey);
+          }
         }
-      }
 
-      setContactItem(ordersLastMessage.map(lastMessage => <MessageItem
-        key={lastMessage.orderUID}
-        title={lastMessage.author}
-        descriptionFirst={lastMessage.orderID}
-        descriptionSecond={lastMessage.message.substr(0, 20)}
-        imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
-        onClick={() => { setOrderUID(lastMessage.orderUID); }}
-      />
-      ));
+        setContactItem(ordersLastMessage.map(lastMessage => <MessageItem
+          key={lastMessage.orderUID}
+          title={lastMessage.author}
+          descriptionFirst={lastMessage.orderID}
+          descriptionSecond={lastMessage.message.substr(0, 20)}
+          imageURL="https://www.adminmart.com/src/assets/images/users/1.jpg"
+          onClick={() => { setOrderUID(lastMessage.orderUID); }}
+        />
+        ));
+      } else {
+        setContactItem(<p style={{padding: 20}}>Brak rozpoczętych rozmów.</p>)
+      }
     }
 
-    if (userData !== null && accountType !== null)
+    if (userData && accountType)
       getAllOrdersChat();
   }, [userData, accountType])
 

@@ -16,6 +16,9 @@
 .notifications__list .message__item.unread{
   background-color: #e6eef8;
 }
+.notifications__list .message__item:first-child{
+  border-top: 1px solid #edf2f9;
+}
 .readMore{
   border-top: 1px solid #edf2f9;
   display: flex;

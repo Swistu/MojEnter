@@ -18,7 +18,7 @@ const UserConfig = () => {
 
   useEffect(() => {
     getUserData().then(snapshot => {
-      const data = snapshot.val();
+      const data = snapshot;
       setUserData({
         "name": data.name,
         "email": data.email,
@@ -41,16 +41,7 @@ const UserConfig = () => {
               <p>Adres: {userData ? userData.address : "brak"}</p>
               <p>Telefon: {userData ? userData.phoneNumber : "brak"}</p>
             </section>
-
-            {/* 
-            <section className="info__box">
-              <p className="info__title">Dodatkowe informacje:</p>
-              <p>Ostatnie logowanie: {auth().lastSignInTime}</p>
-              <p>Utworzenie konta: {userData.creationTime}</p>
-            </section> 
-            */}
-
-            <Input type="submit" className="btn btn--light" value="Aktualizuj dane" onClick={() => dispatch(modal(SHOW, "Zmień dane", <UpdateUser />))} />
+            <Input type="submit" className="btn btn--light" value="Aktualizuj dane" onClick={() => dispatch(modal(SHOW, "Zmień dane", <UpdateUser userData={userData} />))} />
           </React.Fragment>
           : "Brak danych"
       }

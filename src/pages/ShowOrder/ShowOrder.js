@@ -127,11 +127,6 @@ const ShowOrder = () => {
           }
         })
 
-        setRenderMemo(<Card className="xl-50">
-          <h2 className="card__title">Notatka</h2>
-          {lodaingMemo ? <Spinner /> : orderMemo ? <div className="initialStyles" dangerouslySetInnerHTML={{ __html: orderMemo }} /> : "Brak notatki"}
-          <Input type="submit" className="btn btn--warning" value="Dodaj notatke" onClick={() => modalHandler("Dodaj notke", <AddNote orderUID={orderUID} />)} />
-        </Card>);
 
         setRenderUpdateOrderButton(<Input type="submit" className="btn btn--success" value="Aktualizuj zlecenie" onClick={() => modalHandler("Aktualizuj zlecenie", <UpdateOrder orderUID={orderUID} />)} />)
       }
@@ -185,7 +180,13 @@ const ShowOrder = () => {
         </React.Fragment> : <Spinner />}
       </Card>
 
-      {renderMemo}
+      {accountType !== "user" ?
+        <Card className="xl-50">
+          <h2 className="card__title">Notatka</h2>
+          {lodaingMemo ? <Spinner /> : orderMemo ? <div className="initialStyles" dangerouslySetInnerHTML={{ __html: orderMemo }} /> : "Brak notatki"}
+          <Input type="submit" className="btn btn--warning" value="Dodaj notatke" onClick={() => modalHandler("Dodaj notke", <AddNote orderUID={orderUID} />)} />
+        </Card> : null
+      }
 
       <Card className="xl-50 xxl-33">
         <h2 className="card__title">Historia zlecenia</h2>
@@ -239,7 +240,7 @@ const ShowOrder = () => {
           <p>Email: handel@enter.pl</p>
         </section>
       </Card>
-    </React.Fragment>
+    </React.Fragment >
   );
 }
 

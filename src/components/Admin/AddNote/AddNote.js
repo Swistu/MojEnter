@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
-import Input from '../../UI/Input/Input';
 import { database } from 'firebase';
+
+import CKEditor from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+import Input from '../../UI/Input/Input';
 
 const AddNote = ({ orderUID }) => {
   const [currentMemo, setCurrentMemo] = useState();
@@ -30,21 +33,15 @@ const AddNote = ({ orderUID }) => {
 
   return (
     <React.Fragment>
-      <Editor
-        apiKey="5pm48o3ipn3vwvjvx337kxdgnt1bsdaxlgbrw5s9e9cdv89w"
-        initialValue={currentMemo}
-        init={{
-          height: 500,
-          menubar: false,
-          plugins: [
-            'advlist autolink lists link image',
-            'charmap print preview anchor help',
-            'searchreplace visualblocks code',
-            'insertdatetime media table paste wordcount'
-          ],
-          inline_styles: true
+      <CKEditor
+        editor={ClassicEditor}
+        data={currentMemo}
+        onChange={(event, editor) => {
+          const data = editor.getData();
+          console.log({ event, editor, data });
+          setContent(data);
         }}
-        onChange={(e) => setContent(e.target.getContent())} />
+      />
 
       <Input type="button" className="btn btn--success" value="Zatwierdź" onClick={addMemo} />
     </React.Fragment>
